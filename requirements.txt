@@ -1,8 +1,7 @@
-#pyRdfa - clone and install
-#pyMicrodata - clone and install
 rdflib
-# httpheader steal from Paste
 flask
 flask-celery
 lepl
 tornado
+pyRdfa  #  https://github.com/RDFLib/PyRDFa.git
+pyMicrodata  #  https://github.com/RDFLib/pymicrodata.git

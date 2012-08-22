@@ -36,4 +36,14 @@ a nice frontend for the validation. To test this service locally, run
 a url into the search bar, and click "Validate" to run a validation on the document.
 
 Running this service locally also requires celery and rabbitmq to be running
-and properly configured.
+and properly configured. RabbitMQ and celery can be configured to work
+together using the supplied example.schemato\_config.py file. Change its name
+to schemato\_config.py and replace the dummy username, password, and vhost
+fields to the appropriate RabbitMQ settings for your system.
+
+Requirements
+------------
+
+Simply use ``pip install -r requirements.txt`` to install the dependencies for
+this project. It also requires a local RabbitMQ server, which can be
+downloaded at http://www.rabbitmq.com/download.html

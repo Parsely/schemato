@@ -60,5 +60,6 @@ def status(task_id):
     return retval
 
 if __name__ == "__main__":
+    print "To start celery, open another terminal in this directory and run"
     print "python manage.py celeryd -l info -E"
     app.run()

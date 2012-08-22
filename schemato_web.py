@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, render_template, request
 from flask_celery import Celery
 import os
+import sys
 import re
 from collections import defaultdict
 import json
@@ -14,7 +15,11 @@ def create_app():
     return Flask("mrschemato")
 
 app = create_app()
-app.config.from_pyfile('schemato_config.py')
+try:
+    with open('schemato_config.py') as f: pass
+    app.config.from_pyfile('schemato_config.py')
+except IOError as e:
+    raise IOError("No configuration file found. Did you remember to rename example.schemato_config.py to schemato_config.py?")
 celery = Celery(app)
 
 @celery.task(name="mrschemato.validate_task")

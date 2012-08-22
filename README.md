@@ -32,7 +32,7 @@ Hosted Service
 
 The mrSchemato module is also incorporated into a web service that provides
 a nice frontend for the validation. To test this service locally, run
-``python server/schemato_web.py``. Then navigate to localhost:5000, paste
+``python schemato_web.py``. Then navigate to localhost:5000, paste
 a url into the search bar, and click "Validate" to run a validation on the document.
 
 Running this service locally also requires celery and rabbitmq to be running

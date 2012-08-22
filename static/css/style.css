@@ -1,0 +1,58 @@
+div{
+    display: block;
+}
+
+body {
+}
+
+footer {
+    font-size: 9pt;
+}
+
+#mainwrap {
+    border: 1px solid #333
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    margin: 0 auto 0 auto;
+    padding: 2px 15px 15px 15px;
+}
+
+.error {
+    border: 1px solid #777;
+    margin-top: 4px;
+    margin-bottom: 2px;
+    padding: 0px 4px 7px 4px;
+}
+
+label {
+    margin-top: 15px;
+    font-size: 15pt;
+    font-weight: bold;
+}
+
+#link {
+    font-size: 19pt;
+    width: 80%;
+    height: 40px;
+    margin-bottom: -2px;
+    overflow: hidden;
+}
+
+footer p{
+    float: left;
+}
+
+.footer-logo-container {
+    float: right;
+    clear: none;
+    text-align: right;
+}
+
+.footer-logo {
+    background-color: #259259;
+    padding: 6px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}

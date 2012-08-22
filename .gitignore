@@ -1,0 +1,4 @@
+*.pyc
+.*.swp
+.*.un~
+schemato_config.py

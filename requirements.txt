@@ -1,0 +1,8 @@
+#pyRdfa - clone and install
+#pyMicrodata - clone and install
+rdflib
+# httpheader steal from Paste
+flask
+flask-celery
+lepl
+tornado

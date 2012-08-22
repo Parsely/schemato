@@ -47,3 +47,8 @@ Requirements
 Simply use ``pip install -r requirements.txt`` to install the dependencies for
 this project. It also requires a local RabbitMQ server, which can be
 downloaded at http://www.rabbitmq.com/download.html
+
+Authors
+-------
+
+schema.to is written and maintained by Emmett Butler for Parse.ly, Inc.

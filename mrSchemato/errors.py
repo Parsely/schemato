@@ -1,7 +1,16 @@
+import re
+
+
 def error_line(string, doc_lines=None):
     for line,num in doc_lines:
         if string in line:
-            return line,num
+            line = line.split(' ')
+            for a in line:
+                if string in a:
+                    line = ' '.join(line[line.index(a) - 3 : line.index(a) + 3])
+                    index = line.find(string)
+                    line = line[index - 15 : index + len(string) + 15]
+                    return line,num
     return ('', 0)
 
 def _error(message, *strings, **kwargs):

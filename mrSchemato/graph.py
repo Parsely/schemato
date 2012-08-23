@@ -7,11 +7,8 @@ from errors import _error
 
 from collections import defaultdict
 import os
+from settings import *
 
-RNEWS_ROOT = "http://iptc.org/std/rNews/2011-10-07#"
-SCHEMA_ROOT = "http://schema.org/"
-OG_ROOT = "http://opengraphprotocol.org/schema/"
-OG_ALT_ROOT = "http://opengraphprotocol.org/schema/"
 
 def deepest_node((subj, pred, obj), graph):
     """recurse down the tree and return a list of the most deeply nested

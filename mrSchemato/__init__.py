@@ -54,7 +54,8 @@ class Validator(object):
                 ret['ont_name'].append(ns)
             err = graph.check(self.doc_lines)
             if err:
-                ret['errors'].append(err)
+                for e in err:
+                    ret['errors'].append(e)
 
         ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
         return dict(ret)

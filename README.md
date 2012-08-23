@@ -9,12 +9,12 @@ To test the validation, clone this repo and run
 
     >>> from mrSchemato import Validator
     >>> validator = Validator()
-    >>> validator.validate("docs/rdf.html")
+    >>> validator.validate("test_documents/rdf.html")
 
 this will run a validation on a correctly-implemented RDFa document (rdf.html). To run
 a validation on a document with errors, use one of the error test files
 
-``>>> validator.validate("docs/schema_errors.html")``
+``>>> validator.validate("test_documents/schema_errors.html")``
 
 The full schema.org standard is now also supported. You can validate any page
 that uses this standard against the RDFa ontology hosted at schema.org. To
@@ -23,7 +23,7 @@ this example
 
 ``>>> validator.validate("http://www.nytimes.com/2012/07/19/world/middleeast/.....html")``
 
-The ``docs`` directory also includes four documents for testing the validation in RDFa
+The ``test_documents`` directory also includes four documents for testing the validation in RDFa
 and microdata, both with and without errors built in. Running the validator on
 either of the correct files should yield no errors.
 

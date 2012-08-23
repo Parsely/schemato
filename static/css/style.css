@@ -45,14 +45,12 @@ footer p{
 
 .footer-logo-container {
     float: right;
-    clear: none;
     text-align: right;
+    margin-top: -8px;
 }
 
 .footer-logo {
-    background-color: #259259;
+    width: 100px;
     padding: 6px;
-    border-radius: 5px;
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 5px;
+    margin-top: -4px;
 }

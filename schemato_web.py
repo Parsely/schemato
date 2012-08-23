@@ -15,8 +15,10 @@ def create_app():
     return Flask("mrschemato")
 
 app = create_app()
+
 try:
-    with open('schemato_config.py') as f: pass
+    conf_path = '/'.join(os.path.realpath(__file__).split('/')[:-1])
+    with open('%s/schemato_config.py' % conf_path) as f: pass
     app.config.from_pyfile('schemato_config.py')
 except IOError as e:
     raise IOError("No configuration file found. Did you remember to rename example.schemato_config.py to schemato_config.py?")

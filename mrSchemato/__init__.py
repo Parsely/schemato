@@ -9,14 +9,6 @@ from graph import Graph
 from settings import *
 
 
-def prettyprint(dict_2d):
-    for k in dict_2d:
-        print k
-        for g in dict_2d[k]:
-            print "   %s" % str(g)
-        print
-
-
 class Validator(object):
     def __init__(self):
         self.namespaces = [RNEWS_ROOT, SCHEMA_ROOT, OG_ROOT, OG_ALT_ROOT]
@@ -40,8 +32,14 @@ class Validator(object):
         ret['url'].append(stream)
 
         ppage = self.ppage.validate(text, self.doc_lines)
-        if ppage:
-            ret['errors'].append(ppage)
+        if ppage['ont_name']:
+            print ppage
+            for a in ppage['ontology']:
+                ret['ontology'].append(a)
+            for a in ppage['ont_name']:
+                ret['ont_name'].append(a)
+            for a in ppage['errors']:
+                ret['errors'].append(a)
 
         self.graphs = self._graphs_from_source(stream)
         if not self.graphs:

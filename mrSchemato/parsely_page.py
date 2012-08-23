@@ -55,6 +55,7 @@ class ParselyPageValidator(object):
 
     def validate(self, text, doc_lines):
         errors = []
+        ret = {'ontology': [], 'ont_name': [], 'errors': []}
 
         try:
             self.parsely_page = self._get_parselypage(doc_lines)
@@ -62,12 +63,16 @@ class ParselyPageValidator(object):
             return [_error("Failed to parse parsely-page content", doc_lines=doc_lines)]
 
         if self.parsely_page:
+            ret['ontology'] = [PARSELY_PAGE_SCHEMA]
+            ret['ont_name'] = ['parsely-page']
             for key in self.parsely_page.keys():
                 err = self.check_key(key, doc_lines)
                 if err:
                     errors.append(err)
 
-        return errors
+        ret['errors'] = errors
+
+        return ret
 
     def check_key(self, key, doc_lines):
         if key not in self.stdref:

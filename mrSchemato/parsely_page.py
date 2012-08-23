@@ -21,8 +21,8 @@ class ParselyPageValidator(object):
         """get list of allowed parameters"""
         text = urllib.urlopen(PARSELY_PAGE_SCHEMA).read()
         tree = etree.parse(StringIO(text))
-        stdref = tree.xpath("//tbody/tr/td[1]/text()")
-        return stdref
+        stdref = tree.xpath("//div/@about")
+        return [a.split(':')[1] for a in stdref]
 
     def _get_parselypage(self, doc_lines):
         """related to the <meta name="parsely-page"> tag, used as the default impl"""

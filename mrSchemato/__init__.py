@@ -33,7 +33,6 @@ class Validator(object):
 
         ppage = self.ppage.validate(text, self.doc_lines)
         if ppage['ont_name']:
-            print ppage
             for a in ppage['ontology']:
                 ret['ontology'].append(a)
             for a in ppage['ont_name']:
@@ -53,9 +52,10 @@ class Validator(object):
             for ns in graph.ns_ont.keys():
                 ret['ontology'].append(graph.ns_ont[ns])
                 ret['ont_name'].append(ns)
-            ret['errors'].append(graph.check(self.doc_lines))
+            err = graph.check(self.doc_lines)
+            if err:
+                ret['errors'].append(err)
 
-        ret['errors'] = sum(ret['errors'], [])
         ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
         return dict(ret)
 
@@ -122,9 +122,6 @@ class Validator(object):
         return doc_lines
 
     def search_prefixes(self, text):
-        print COMMON_PREFIXES
-        print text
-        print "og: in text: %s" % ('og:' in text)
         return [a for a in COMMON_PREFIXES if a in text]
 
     def _get_document(self, url):

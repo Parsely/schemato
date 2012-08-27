@@ -6,7 +6,7 @@ from fabric.colors import green, red
 env.remote_dir = "/data/apps/cogtree"
 env.temp_folder = "/tmp"
 env.archive_name = "schema.tar"
-env.project_name = "mrSchemato"
+env.project_name = "mrschemato"
 env.hosts = ['hack.cogtree.com']
 env.user = 'cogtree'
 
@@ -23,14 +23,25 @@ def _deploy_repo(path):
     with cd(env.remote_dir):
         puts("Unpacking archive on server")
         run('tar xvf %s' % env.archive_name)
-        run('rm %s' % tmp_archive)
+        run('rm %s' % env.archive_name)
     with cd(path):
         local('rm %s' % tmp_archive)
     return
+
+def _reload_service(service):
+    puts("Reloading %s" % service)
+    run("sudo supervisorctl restart %s" % service)
+    running = run("ps aux | grep -i %s | grep -i python | wc -l" % service)
+    if running == "0":
+        puts(red("reloading %s failed" % service))
+    else:
+        puts(green("Success"))
 
 @task
 def deploy():
     path = local('git rev-parse --show-toplevel',capture=True)
     puts("Deploying mrSchemato to %s" % env.host)
     _deploy_repo(path)
+    _reload_service("celery")
+    _reload_service("mrschemato")
     puts(green("Deployment succeeded."))

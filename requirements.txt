@@ -1,7 +1,4 @@
 rdflib
-flask
-flask-celery
 lepl
-tornado
-pyRdfa  #  https://github.com/RDFLib/PyRDFa.git
-pyMicrodata  #  https://github.com/RDFLib/pymicrodata.git
+-e git+git://github.com/RDFLib/PyRDFa.git#egg=pyRdfa
+-e git+git://github.com/RDFLib/pymicrodata.git#egg=pyMicrodata

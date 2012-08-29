@@ -149,7 +149,65 @@ in our test cases and make assertions. We should use standard nosetests as
 expected. Also, a good idea to consider test coverage using the ``coverage.py``
 module for this project.
 
+More Standards
+~~~~~~~~~~~~~~
+
+The more I've been reading about structured metadata online, the more standards
+I've found. I think it's a great idea to release it with the standards we have,
+but perhaps we should specifically ask the community that implementations of
+these standards would be awesome:
+
+* hNews
+* Dublin Core
+* HTML4 WHAT-WG
+* HTML5 semantic tags
+
+There are definitely others outside of the pure news space that would be
+interesting, so we should nudge people toward these :)
+
+Returning the Graph?
+~~~~~~~~~~~~~~~~~~~~
+
+It occurred to me that it would be useful if the validator actually returned
+the metadata graph it was able to retrieve from the page. Something like::
+
+    {
+        "metadata": {
+            "title": "...",
+            "author": "...",
+            "section": "...",
+            "pub_date": "...",
+            "url": "..."
+        },
+        "standard": {
+            "rnews": {...},
+            "schemaorg": {...},
+            "opengraph": {...},
+            "parselypage": {...}
+        }
+    }
+
+where ``metadata`` contains our "merged & normalized" view of the page metadata
+that matter to us, and ``standard`` are the raw metadata attributes from each
+individual metadata standard.
+
+It also occurred to me that we could make this an API -- we should probably
+make a Wufoo form to guage interest in this.
+
 Code-Level
 ----------
 
-OK, now for some nitty-gritty stuff... (coming soon)
+Reliance on lepl and Flask-Celery
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It turns out that celery has added official Flask support, so Flask-Celery is
+officially deprecated. This is highlighted on their PyPi page:
+
+http://pypi.python.org/pypi/Flask-Celery
+
+Likewise, it seems like LEPL (aka lepl) is abandoned by the maintainer, who
+declared it something of a failure. We seem to use a single little piece of
+this library, not really sure why we pulled it in for that. 
+
+http://www.acooke.org/lepl/discontinued.html
+

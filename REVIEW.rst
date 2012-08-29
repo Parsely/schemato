@@ -211,3 +211,12 @@ this library, not really sure why we pulled it in for that.
 
 http://www.acooke.org/lepl/discontinued.html
 
+Dependencies from pyRDFa and rdflib need guidance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Looks like these need to be installed from Github since they are not published
+& kept up-to-date on PyPI. Seems like we should either nudge them toward this
+by opening issues about it, or actually do the work ourselves.
+
+Until then, installing using an egg from Github tied to a specific (stable) 
+version would do the trick.

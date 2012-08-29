@@ -71,10 +71,7 @@ class Graph(object):
     def build_graph(self):
         """build a graph from the document and assemble the ontologies
         necessary to validate it"""
-        try:
-            self.graph = self.parser.graph_from_source(self.source)
-        except Exception, e:
-            raise ValueError("Error parsing source: %s" % e)
+        self.graph = self.parser.graph_from_source(self.source)
 
         for ns in self.ns_ont:
             self.ontologies.append(self.parse_ontology(self.ns_ont[ns]))

@@ -4,7 +4,7 @@ BROKER_USER = "myuser"
 BROKER_PASSWORD = "mypassword"
 BROKER_VHOST = "myvhost"
 
-CELERY_IMPORTS = ("mrschemato",)
+CELERY_IMPORTS = ("schemato",)
 CELERY_RESULT_BACKEND = "amqp"
 CELERY_TASK_PUBLISH_RETRY = {
     "max_retries": 3,

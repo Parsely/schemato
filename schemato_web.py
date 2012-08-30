@@ -9,10 +9,10 @@ import json
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.sys.path.insert(0,parentdir)
 
-from mrSchemato import Validator
+from schemato import Validator
 
 def create_app():
-    return Flask("mrschemato")
+    return Flask("schemato")
 
 app = create_app()
 
@@ -24,7 +24,7 @@ except IOError as e:
     raise IOError("No configuration file found. Did you remember to rename example.schemato_config.py to schemato_config.py?")
 celery = Celery(app)
 
-@celery.task(name="mrschemato.validate_task")
+@celery.task(name="schemato.validate_task")
 def validate_task(url):
     v = Validator()
     try:

@@ -13,6 +13,8 @@ from settings import *
 def deepest_node((subj, pred, obj), graph):
     """recurse down the tree and return a list of the most deeply nested
     child nodes of the given triple"""
+    # i don't fully accept the premise that this docstring presents
+    # i'm not a docstring literalist
     to_return = []
     def _deepest_node((subj, pred, obj), graph):
         children = []
@@ -22,6 +24,7 @@ def deepest_node((subj, pred, obj), graph):
                     children.append((s,p,o))
             for s,p,o in children:
                 s1,p1,o1 = _deepest_node((s, p, o), graph)
+                # coupling *smacks hand with ruler*
                 if "rNews" in str(o1) and (s1,p1,o1) not in to_return:
                     to_return.append((s1,p1,o1))
             return (s1,p1,o1)
@@ -33,10 +36,12 @@ def deepest_node((subj, pred, obj), graph):
 
 class Graph(object):
     """a graph may have multiple ontologies but must have exactly one self.graph"""
+    # the concept of a graph object should probably still exist at some level,
+    # but it will be more deeply nested within abstractions
     def __init__(self, url, impl):
         self.ns_ont = {}
         self.attribs_by_class = defaultdict(list)
-        self.ontologies = []
+        self.ontologies = [] # are these initializations necessary
         self.attributes = []
         self.source = url
         self.impl = impl
@@ -73,6 +78,8 @@ class Graph(object):
         necessary to validate it"""
         self.graph = self.parser.graph_from_source(self.source)
 
+        # this depends on a field that's not set in the constructor, ns_ont
+        # it must be set before this function is called. that sucks so much
         for ns in self.ns_ont:
             self.ontologies.append(self.parse_ontology(self.ns_ont[ns]))
 
@@ -86,6 +93,7 @@ class Graph(object):
         self.ontology is a dict containing triples of the form {subj: (pred, obj)}
         self.attribs_by_class is a dict like {class: [class_data_members]}
         """
+        # this method will probably go into the *SchemaDef classes
         source = source or self.ont_source_url
         ontology = defaultdict(list)
 
@@ -127,6 +135,9 @@ class Graph(object):
 
         instanceof = self.is_instance((subj, pred, obj)) or self.source
 
+        # this method should differentiate between an "error" and a "warning"
+        # since not all issues with an implementation worth telling
+        # the user about are actual "errors", just things to keep in mind
         class_invalid = self.validate_class(instanceof)
         if class_invalid:
             return class_invalid
@@ -156,6 +167,7 @@ class Graph(object):
         """return error if class `cl` is not found in the ontology"""
         if cl not in self.attribs_by_class.keys():
             search_string = str(cl)
+            # this is fishy
             if self.impl != 'microdata':
                 search_string = self.field_name(cl)
             return _error("{0} - invalid class", self.field_name(cl),
@@ -189,6 +201,7 @@ class Graph(object):
         document into an rdflib.Graph"""
         name, ext = os.path.splitext(source)
         if ext in ['.ttl']:
+            # these should each belong to their respective validator
             def _parse_func(s):
                 return rdflib.Graph().parse(s, format='n3')
         else:

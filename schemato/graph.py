@@ -94,7 +94,6 @@ class Graph(object):
         self.attribs_by_class is a dict like {class: [class_data_members]}
         """
         # this method will probably go into the *SchemaDef classes
-        source = source or self.ont_source_url
         ontology = defaultdict(list)
 
         parse_func = self.get_filetype(source)

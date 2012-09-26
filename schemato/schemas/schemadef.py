@@ -30,6 +30,7 @@ class SchemaDef(object):
                     self.attributes_by_class[o].append(subj)
 
     def _schema_nodes(self):
+        # test commit
         """parse the ontology file into a graph"""
 
         errorstring = "Are you calling parse_ontology from the base SchemaDef class?"

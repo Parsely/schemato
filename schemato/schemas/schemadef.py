@@ -21,6 +21,19 @@ class SchemaDef(object):
         # lexicon should be a dict containing range, domain, type, and
         # subclass URIs
 
+    def _pull_standard(self):
+        # if it has been > x days since last cache
+        #   request the latest version of self._ontology_file
+        #   self._cache_standard(pulled_file)
+        # return file object
+        pass
+
+    def _cache_standard(self, stdfile):
+        """the point of caching is to avoid extraneous web requests"""
+        # if the cache is empty or if stdfile is different
+        # from cached version, cache stdfile
+        pass
+
     def parse_ontology(self):
         for subj, pred, obj in self._schema_nodes()
             leaves = [(subj, pred, obj)]
@@ -42,8 +55,10 @@ class SchemaDef(object):
         if not self.lexicon:
             raise ValueError("No lexicon object assigned. %s" % errorstring)
 
+        latest_file = self._pull_standard()
+
         try:
-            graph = self.ontology_parser_function(self._ontology_file)
+            graph = self.ontology_parser_function(latest_file)
         except:
             raise IOError("Error parsing ontology %s" % self._ontology_file)
 

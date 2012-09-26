@@ -36,8 +36,6 @@ def deepest_node((subj, pred, obj), graph):
 
 class Graph(object):
     """a graph may have multiple ontologies but must have exactly one self.graph"""
-    # the concept of a graph object should probably still exist at some level,
-    # but it will be more deeply nested within abstractions
     def __init__(self, url, impl):
         self.ns_ont = {}
         self.attribs_by_class = defaultdict(list)

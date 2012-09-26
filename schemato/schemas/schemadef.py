@@ -13,11 +13,13 @@ class SchemaDef(object):
     """class to handle the loading and caching of a standard"""
     def __init__(self):
         super(SchemaDef, self).__init__()
-        self.ontology_file = ""
+        self._ontology_file = ""
         self.ontology = defaultdict(list)
         self.attributes_by_class = defaultdict(list)
-        self.ontology_parser_function = None
+        self._ontology_parser_function = None
         self.lexicon = None
+        # lexicon should be a dict containing range, domain, type, and
+        # subclass URIs
 
     def parse_ontology(self):
         for subj, pred, obj in self._schema_nodes()
@@ -35,15 +37,15 @@ class SchemaDef(object):
         errorstring = "Are you calling parse_ontology from the base SchemaDef class?"
         if not self.ontology_parser_function:
             raise ValueError("No function found to parse ontology. %s" % errorstring)
-        if not self.ontology_file:
+        if not self._ontology_file:
             raise ValueError("No ontology file specified. %s" % errorstring)
         if not self.lexicon:
             raise ValueError("No lexicon object assigned. %s" % errorstring)
 
         try:
-            graph = self.ontology_parser_function(self.ontology_file)
+            graph = self.ontology_parser_function(self._ontology_file)
         except:
-            raise IOError("Error parsing ontology %s" % self.ontology_file)
+            raise IOError("Error parsing ontology %s" % self._ontology_file)
 
         for subj, pred, obj in graph:
             self.ontology[subj].append((pred, obj))

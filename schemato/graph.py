@@ -112,6 +112,8 @@ class Graph(object):
                 deep_nodes = deepest_node((subj, pred, obj), graph)
 
             for s,p,o in deep_nodes:
+                # this OG-specific bit hasn't been copied over to refactored
+                # version yet
                 if "ogp.me" in source or "opengraph" in source:
                     if s not in self.attribs_by_class[self.source] and not isinstance(s, rt.BNode):
                         self.attribs_by_class[self.source].append(s)

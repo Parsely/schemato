@@ -12,6 +12,11 @@ class SchemaValidator(object):
         self.doc_lines = doc_lines
 
     def validate(self):
+        errorstring = "Are you calling validate from the base SchemaValidator class?"
+
+        if not self.schema_def:
+            raise ValueError("No schema definition supplied. %s" % errorstring)
+
         errors = []
         self.checked_attributes = []
         for s,p,o in self.graph:

@@ -23,6 +23,7 @@ class SchemaValidator(object):
             error = self._check_triple((s,p,o))
             if error and error not in errors:
                 errors.append(error)
+        # should return a ValidationResult object
         return errors
 
     def _check_triple(self, (subj, pred, obj)):

@@ -20,3 +20,4 @@ def deepest_node((subj, pred, obj), graph):
             return (subj, pred, obj)
     _deepest_node((subj, pred, obj), graph)
     return to_return
+

@@ -17,32 +17,20 @@ class SchemaDef(object):
         self.ontology = defaultdict(list)
         self.attributes_by_class = defaultdict(list)
         self._ontology_parser_function = None
-        self.lexicon = None
-        # lexicon should be a dict containing range, domain, type, and
-        # subclass URIs
+        self.lexicon = {}
 
     def _pull_standard(self):
         # if it has been > x days since last cache
         #   request the latest version of self._ontology_file
         #   self._cache_standard(pulled_file)
         # return file object
-        pass
+        return self._ontology_file
 
     def _cache_standard(self, stdfile):
         """the point of caching is to avoid extraneous web requests"""
         # if the cache is empty or if stdfile is different
         # from cached version, cache stdfile
         pass
-
-    def parse_ontology(self):
-        for subj, pred, obj in self._schema_nodes()
-            leaves = [(subj, pred, obj)]
-            if type(obj) == rt.BNode:
-                leaves = deepest_node((subj, pred, obj), graph)
-
-            for s,p,o in leaves:
-                if pred == rt.URIRef(self.domain_uri):
-                    self.attributes_by_class[o].append(subj)
 
     def _schema_nodes(self):
         """parse the ontology file into a graph"""
@@ -60,22 +48,42 @@ class SchemaDef(object):
         try:
             graph = self.ontology_parser_function(latest_file)
         except:
-            raise IOError("Error parsing ontology %s" % self._ontology_file)
+            pass
 
         for subj, pred, obj in graph:
             self.ontology[subj].append((pred, obj))
             yield (subj, pred, obj)
 
+    def parse_ontology(self):
+        for subj, pred, obj in self._schema_nodes()
+            leaves = [(subj, pred, obj)]
+            if type(obj) == rt.BNode:
+                leaves = deepest_node((subj, pred, obj), graph)
 
-# what separate functionality does an RdfSchemaDef have
-# from a MicrodataSchemaDef?
+            for s,p,o in leaves:
+                if pred == rt.URIRef(self.lexicon['domain']):
+                    self.attributes_by_class[o].append(subj)
+
+
 class RdfSchemaDef(SchemaDef):
     def __init__(self):
         super(RdfSchemaDef, self).__init__()
         self.ontology_parser_function = lambda s: rdflib.Graph().parse(s, format='n3')
+        self.lexicon = {
+            'range': "http://www.w3.org/2000/01/rdf-schema#range",
+            'domain': "http://www.w3.org/2000/01/rdf-schema#domain",
+            'type': "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+        }
 
 
 class MicrodataSchemaDef(SchemaDef):
     def __init__(self):
         super(MicrodataSchemaDef, self).__init__()
         self.ontology_parser_function = lambda s: pyRdfa().graph_from_source(s)
+        self.lexicon = {
+            'range': "http://schema.org/range",
+            'domain': "http://schema.org/domain",
+            'type': "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+        }

@@ -24,7 +24,7 @@ def deepest_node((subj, pred, obj), graph):
                     children.append((s,p,o))
             for s,p,o in children:
                 s1,p1,o1 = _deepest_node((s, p, o), graph)
-                # coupling *smacks hand with ruler*
+                # *smacks hand with ruler*
                 if "rNews" in str(o1) and (s1,p1,o1) not in to_return:
                     to_return.append((s1,p1,o1))
             return (s1,p1,o1)

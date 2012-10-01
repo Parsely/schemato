@@ -10,7 +10,12 @@ from utils import deepest_node
 
 # what functionality is common to every single schema def?
 class SchemaDef(object):
-    """class to handle the loading and caching of a standard"""
+    """class to handle the loading and caching of a standard
+    ASSUMPTIONS:
+        This class holds the definition of a standard
+        It does not perform any validation against that standard
+        This class knows nothing about the input file being validated
+    """
     def __init__(self):
         super(SchemaDef, self).__init__()
         self._ontology_file = ""
@@ -65,6 +70,7 @@ class SchemaDef(object):
                     self.attributes_by_class[o].append(subj)
 
 
+# Implementation-specific subclasses
 class RdfSchemaDef(SchemaDef):
     def __init__(self):
         super(RdfSchemaDef, self).__init__()

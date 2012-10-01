@@ -118,6 +118,8 @@ class Validator(object):
             # make one big graph for the rdf standards
             if ns in RDFA_NAMESPACES:
                 rdf_graph = Graph(url, 'rdfa')
+                # oh also, this assignment happens IN ANOTHER CLASS
+                # wow cool coupling bro
                 rdf_graph.ns_ont[ns] = ns2ont[ns]
             # make another single graph for the microdata ones
             elif ns in MICRODATA_NAMESPACES:

@@ -1,14 +1,19 @@
 class SchemaValidator(object):
-    def __init__(self):
+    """ASSUMPTIONS:
+        This class knows about the file being validated, but it recieves that
+        file as a graph and a doc_lines
+        It does not perform any parsing logic on the file
+        It recieves a "validatable" object and returns errors
+    """
+    def __init__(self, graph, doc_lines):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
-        self.graph = None
-        self.parser = None
+        self.graph = graph
+        self.doc_lines = doc_lines
 
-    def validate(self, source):
-        # must create doc_lines here
-        self.graph = self.parser.graph_from_source(source)
+    def validate(self):
         errors = []
+        self.checked_attributes = []
         for s,p,o in self.graph:
             error = self._check_triple((s,p,o))
             if error and error not in errors:
@@ -49,7 +54,7 @@ class SchemaValidator(object):
             return dupe_invalid
 
         # collect a list of checked attributes
-        self.attributes.append((subj,pred))
+        self.checked_attributes.append((subj,pred))
 
         return
 
@@ -59,22 +64,17 @@ class SchemaValidator(object):
 
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
-        valid = False
-        # change this
-        for ns in self.ns_ont.keys():
-            name = "%s%s" % (ns, self.field_name_from_uri(member))
-            if rt.URIRef(name) in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
-                valid = True
-                # break
-        if not valid:
+        # for each namespace this validator knows about
+        # (ie only one, since this validator works for one namespace only)
+        name = "%s%s" % (self.namespace, self.field_name_from_uri(member))
+        if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
             return _error("{0} - invalid member of {1}",
                 self.field_name_from_uri(member), self.field_name_from_uri(instanceof),
                 doc_lines=self.doc_lines)
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
-        # pull over self.attributes
-        if (subj,pred) in self.attributes:
+        if (subj,pred) in self.checked_attributes:
             return _error("{0} - duplicated member of {1}", self.field_name_from_uri(pred),
                 self.field_name_from_uri(cl), doc_lines=self.doc_lines)
 
@@ -126,6 +126,7 @@ class RdfValidator(SchemaValidator):
             search_string = self._field_name_from_uri(cl)
             return _error("{0} - invalid class", self.field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
+
 
 class MicrodataValidator(SchemaValidator):
     def __init__(self):

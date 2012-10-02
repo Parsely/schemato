@@ -1,3 +1,6 @@
+import urllib
+import re
+
 from schemas.rnews import RNewsValidator
 from schemas.opengraph import OpenGraphValidator
 from schemas.schemaorg import SchemaOrgValidator
@@ -7,11 +10,12 @@ class Schemato(object):
     def __init__(self, source):
         super(Schemato, self).__init__()
         text, url, doc_lines = self._read_stream(source)
+        self.url = url
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
         self.validators = []
         self.validators.append(RNewsValidator(self.graph, self.doc_lines))
-        self.validators.append(OpenGraphValidator(self.graph, self.doc_lines))
+        self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
         self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
 
     def validate(self):
@@ -35,7 +39,6 @@ class Schemato(object):
                 scheme_url = "http://%s" % url
             else:
                 scheme_url = url
-
             try:
                 text = urllib.urlopen(scheme_url).read()
                 url = scheme_url

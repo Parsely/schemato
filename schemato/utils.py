@@ -1,3 +1,5 @@
+import rdflib.term as rt
+
 def deepest_node((subj, pred, obj), graph):
     """recurse down the tree and return a list of the most deeply nested
     child nodes of the given triple"""

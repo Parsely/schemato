@@ -1,3 +1,6 @@
+from pyRdfa import pyRdfa
+from pyMicrodata import pyMicrodata
+
 class SchemaValidator(object):
     """ASSUMPTIONS:
         This class knows about the file being validated, but it recieves that
@@ -14,6 +17,7 @@ class SchemaValidator(object):
     def validate(self):
         errorstring = "Are you calling validate from the base SchemaValidator class?"
 
+        print "Validating against %s" % self.schema_def.__class__.__name__
         if not self.schema_def:
             raise ValueError("No schema definition supplied. %s" % errorstring)
 
@@ -32,7 +36,7 @@ class SchemaValidator(object):
         # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
             return
-        if self._namespace_from_uri(pred) not in self.ns_ont.keys():
+        if self._namespace_from_uri(pred) != self.namespace:
             return
 
         classes = []
@@ -124,7 +128,8 @@ class SchemaValidator(object):
 
 # what functionality do rdf and microdata validation not share
 class RdfValidator(SchemaValidator):
-    def __init__(self):
+    def __init__(self, graph, doc_lines):
+        super(RdfValidator, self).__init__(graph, doc_lines)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph
 
@@ -136,7 +141,8 @@ class RdfValidator(SchemaValidator):
 
 
 class MicrodataValidator(SchemaValidator):
-    def __init__(self):
+    def __init__(self, graph, doc_lines):
+        super(MicrodataValidator, self).__init__(graph, doc_lines)
         self.parser = pyMicrodata()
         self.graph = self.graph.microdata_graph
 

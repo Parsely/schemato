@@ -5,6 +5,10 @@ class SchemaOrgSchemaDef(MicrodataSchemaDef):
     def __init__(self):
         super(SchemaOrgSchemaDef, self).__init__()
         self._ontology_file = "http://schema.org/docs/schema_org_rdfa.html"
+        self.parse_ontology()
 
 class SchemaOrgValidator(MicrodataValidator):
-    pass
+    def __init__(self, graph, doc_lines):
+        super(SchemaOrgValidator, self).__init__(graph, doc_lines)
+        self.schema_def = SchemaOrgSchemaDef()
+        self.namespace = "http://schema.org/"

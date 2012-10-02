@@ -8,7 +8,7 @@ class SchemaValidator(object):
     def __init__(self, graph, doc_lines):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
-        self.graph = graph
+        self.graph = graph # a CompoundGraph
         self.doc_lines = doc_lines
 
     def validate(self):
@@ -126,6 +126,7 @@ class SchemaValidator(object):
 class RdfValidator(SchemaValidator):
     def __init__(self):
         self.parser = pyRdfa()
+        self.graph = self.graph.rdfa_graph
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
@@ -137,6 +138,7 @@ class RdfValidator(SchemaValidator):
 class MicrodataValidator(SchemaValidator):
     def __init__(self):
         self.parser = pyMicrodata()
+        self.graph = self.graph.microdata_graph
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():

@@ -1,5 +1,7 @@
-from schemas import RNewsValidator, OpenGraphValidator, SchemaOrgValidator
-import CompoundGraph
+from schemas.rnews import RNewsValidator
+from schemas.opengraph import OpenGraphValidator
+from schemas.schemaorg import SchemaOrgValidator
+from compound_graph import CompoundGraph
 
 class Schemato(object):
     def __init__(self, source):

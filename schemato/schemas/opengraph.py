@@ -7,7 +7,7 @@ class OpenGraphSchemaDef(RdfSchemaDef):
         self._ontology_file = "http://ogp.me/ns/ogp.me.ttl"
 
     def parse_ontology(self):
-        for subj, pred, obj in self._schema_nodes()
+        for subj, pred, obj in self._schema_nodes():
             leaves = [(subj, pred, obj)]
             if type(obj) == rt.BNode:
                 leaves = deepest_node((subj, pred, obj), graph)

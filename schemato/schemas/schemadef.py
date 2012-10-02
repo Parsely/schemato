@@ -5,7 +5,7 @@ import rdflib
 
 from collections import defaultdict
 
-from utils import deepest_node
+from schemato.utils import deepest_node
 
 
 # what functionality is common to every single schema def?
@@ -60,7 +60,7 @@ class SchemaDef(object):
             yield (subj, pred, obj)
 
     def parse_ontology(self):
-        for subj, pred, obj in self._schema_nodes()
+        for subj, pred, obj in self._schema_nodes():
             leaves = [(subj, pred, obj)]
             if type(obj) == rt.BNode:
                 leaves = deepest_node((subj, pred, obj), graph)

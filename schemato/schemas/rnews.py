@@ -7,7 +7,7 @@ class RNewsValidator(RdfValidator):
         self.schema_def = RNewsSchemaDef()
         self.namespace = "http://iptc.org/std/rNews/2011-10-07#"
 
-class RNewsSchemaDef(RdfSchema):
+class RNewsSchemaDef(RdfSchemaDef):
     def __init__(self):
         super(RNewsSchemaDef, self).__init__()
         self._ontology_file = "http://dev.iptc.org/files/rNews/rnews_1.0_draft3_rdfxml.owl"

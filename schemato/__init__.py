@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 import sys
 
-from parsely_page import ParselyPageValidator
+#from parsely_page import ParselyPageValidator
 from errors import _error
 from graph import Graph
 from settings import *

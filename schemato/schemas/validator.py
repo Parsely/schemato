@@ -1,3 +1,5 @@
+import rdflib.term as rt
+
 from pyRdfa import pyRdfa
 from pyMicrodata import pyMicrodata
 
@@ -76,7 +78,7 @@ class SchemaValidator(object):
         """return error if `member` is not a member of any class in `classes`"""
         # for each namespace this validator knows about
         # (ie only one, since this validator works for one namespace only)
-        name = "%s%s" % (self.namespace, self.field_name_from_uri(member))
+        name = "%s%s" % (self.namespace, self._field_name_from_uri(member))
         if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
             return _error("{0} - invalid member of {1}",
                 self.field_name_from_uri(member), self.field_name_from_uri(instanceof),
@@ -151,6 +153,4 @@ class MicrodataValidator(SchemaValidator):
             search_string = str(cl)
             return _error("{0} - invalid class", self.field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
-
-
 

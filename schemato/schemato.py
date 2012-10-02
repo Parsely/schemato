@@ -20,7 +20,8 @@ class Schemato(object):
 
     def validate(self):
         for v in self.validators:
-            v.validate()
+            if v.graph:
+                print v.validate()
 
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""

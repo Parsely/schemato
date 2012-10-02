@@ -26,6 +26,10 @@ class SchemaValidator(object):
         errors = []
         self.checked_attributes = []
         for s,p,o in self.graph:
+            print s
+            print p
+            print o
+            print
             error = self._check_triple((s,p,o))
             if error and error not in errors:
                 errors.append(error)
@@ -37,8 +41,11 @@ class SchemaValidator(object):
         of whether it's adherent or not"""
         # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
+            print "ignoring triple"
             return
         if self._namespace_from_uri(pred) != self.namespace:
+            print self._namespace_from_uri(pred)
+            print "unknown namespace for triple"
             return
 
         classes = []

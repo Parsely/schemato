@@ -1,10 +1,13 @@
 import urllib
+import logging as log
 import re
 
 from schemas.rnews import RNewsValidator
 from schemas.opengraph import OpenGraphValidator
 from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
+
+log.basicConfig(level=log.INFO)
 
 class Schemato(object):
     def __init__(self, source):
@@ -13,15 +16,19 @@ class Schemato(object):
         self.url = url
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
+        log.debug("in schemato init: %s" % self.graph.rdfa_graph)
         self.validators = []
         self.validators.append(RNewsValidator(self.graph, self.doc_lines))
         self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
         self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
 
     def validate(self):
+        log.debug("starting validate")
         for v in self.validators:
             if v.graph:
-                print v.validate()
+                log.info(v.validate())
+            else:
+                log.info("no graph for %s" % v.__class__.__name__)
 
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""

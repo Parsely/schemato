@@ -2,7 +2,7 @@ import rdflib.term as rt
 
 from validator import RdfValidator
 from schemadef import RdfSchemaDef
-from schemato.utils import deepest_node
+from utils import deepest_node
 
 class OpenGraphSchemaDef(RdfSchemaDef):
     def __init__(self, url):
@@ -26,5 +26,4 @@ class OpenGraphValidator(RdfValidator):
         super(OpenGraphValidator, self).__init__(graph, doc_lines)
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)
-        self.namespace = "http://ogp.me/ns#"
-        # self.namespace = "http://opengraphprotocol.org/schema/"
+        self.namespace = ["http://ogp.me/ns#", "http://opengraphprotocol.org/schema/"]

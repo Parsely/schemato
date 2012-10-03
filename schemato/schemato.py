@@ -7,6 +7,8 @@ from schemas.opengraph import OpenGraphValidator
 from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 
+import rdflib
+
 log.basicConfig(level=log.INFO)
 
 class Schemato(object):
@@ -17,6 +19,7 @@ class Schemato(object):
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
         log.debug("in schemato init: %s" % self.graph.rdfa_graph)
+        # populate from a file somehow
         self.validators = []
         self.validators.append(RNewsValidator(self.graph, self.doc_lines))
         self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))

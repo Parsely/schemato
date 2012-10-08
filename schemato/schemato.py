@@ -1,13 +1,15 @@
 import urllib
 import logging as log
 import re
+from collections import defaultdict
+
+import rdflib
 
 from schemas.rnews import RNewsValidator
 from schemas.opengraph import OpenGraphValidator
 from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 
-import rdflib
 
 log.basicConfig(level=log.INFO)
 
@@ -26,12 +28,17 @@ class Schemato(object):
         self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
 
     def validate(self):
+        ret = defaultdict(list)
+
         log.debug("starting validate")
         for v in self.validators:
             if v.graph:
+                ret['ontology'].append(v.schema_def.ontology_file)
                 log.info(v.validate())
             else:
                 log.info("no graph for %s" % v.__class__.__name__)
+
+        return ret
 
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""

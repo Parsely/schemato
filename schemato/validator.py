@@ -17,28 +17,28 @@ class SchemaValidator(object):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
         self.graph = graph # a CompoundGraph
-        log.debug("init validator: %s" % self.graph)
+        log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines
 
     def validate(self):
         errorstring = "Are you calling validate from the base SchemaValidator class?"
 
-        log.debug("-------------------------------------------------------------------")
-        log.debug("Validating against %s" % self.schema_def.__class__.__name__)
+        log.info("-------------------------------------------------------------------")
+        log.info("Validating against %s" % self.schema_def.__class__.__name__)
         if not self.schema_def:
             raise ValueError("No schema definition supplied. %s" % errorstring)
         if not self.graph:
             raise ValueError("No graph object found to validate!")
 
-        log.debug("in validator.validate: %s" % self.graph)
+        log.info("in validator.validate: %s" % self.graph)
 
         errors = []
         self.checked_attributes = []
         for s,p,o in self.graph:
-            log.debug("")
-            log.debug("subj: " + s)
-            log.debug("pred: " + p)
-            log.debug("obj: " + o)
+            log.info("")
+            log.info("subj: " + s)
+            log.info("pred: " + p)
+            log.info("obj: " + o)
             error = self._check_triple((s,p,o))
             if error and error not in errors:
                 errors.append(error)
@@ -50,13 +50,14 @@ class SchemaValidator(object):
         of whether it's adherent or not"""
         # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
-            log.debug("ignoring triple with field %s" % self._field_name_from_uri(pred))
+            log.info("ignoring triple with field %s" % self._field_name_from_uri(pred))
             return
         if self._namespace_from_uri(pred) not in self.namespace:
-            log.debug("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
+            log.info("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
             return
 
         classes = []
+        log.warning("Valid member %s found" % pred)
 
         instanceof = self._is_instance((subj, pred, obj)) or self.source
 
@@ -83,7 +84,7 @@ class SchemaValidator(object):
         # collect a list of checked attributes
         self.checked_attributes.append((subj,pred))
 
-        log.debug("successfully validated triple, no errors")
+        log.warning("successfully validated triple, no errors")
 
         return
 
@@ -95,6 +96,7 @@ class SchemaValidator(object):
         """return error if `member` is not a member of any class in `classes`"""
         # for each namespace this validator knows about
         # (ie only one, since this validator works for one namespace only)
+        log.info("Validating member %s" % member)
         name = "%s%s" % (self.namespace, self._field_name_from_uri(member))
         if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
             return _error("{0} - invalid member of {1}",
@@ -103,6 +105,7 @@ class SchemaValidator(object):
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
+        log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             return _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
@@ -151,7 +154,7 @@ class RdfValidator(SchemaValidator):
         super(RdfValidator, self).__init__(graph, doc_lines)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph
-        log.debug("in RdfValidator init %s" % self.graph)
+        log.info("in RdfValidator init %s" % self.graph)
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():

@@ -2,4 +2,4 @@ Authors
 =======
 
 Original author: Emmett Butler - http://emmettbutler.com
-Review, refactoring, contributions: Andrew Montalenti - http://pixlemonkey.org
+Review, refactoring, contributions: Andrew Montalenti - http://pixelmonkey.org

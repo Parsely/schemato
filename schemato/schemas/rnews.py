@@ -5,7 +5,7 @@ class RNewsValidator(RdfValidator):
     def __init__(self, graph, doc_lines):
         super(RNewsValidator, self).__init__(graph, doc_lines)
         self.schema_def = RNewsSchemaDef()
-        self.namespace = ["http://iptc.org/std/rNews/2011-10-07#"]
+        self.namespace = "http://iptc.org/std/rNews/2011-10-07#"
 
 class RNewsSchemaDef(RdfSchemaDef):
     def __init__(self):

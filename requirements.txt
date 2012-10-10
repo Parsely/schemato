@@ -1,4 +1,4 @@
 rdflib
 lepl
--e git+git://github.com/RDFLib/PyRDFa.git#egg=pyRdfa
+-e git+git://github.com/RDFLib/pyrdfa3.git#egg=pyrdfa3
 -e git+git://github.com/RDFLib/pymicrodata.git#egg=pyMicrodata

@@ -11,7 +11,7 @@ from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 
 
-log.basicConfig(level=log.WARNING)
+log.basicConfig(level=log.INFO)
 
 class Schemato(object):
     def __init__(self, source):

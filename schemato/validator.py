@@ -95,13 +95,14 @@ class SchemaValidator(object):
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
         # for each namespace this validator knows about
-        # (ie only one, since this validator works for one namespace only)
+        # this causes false errors for standards with multiple valid namespaces
         log.info("Validating member %s" % member)
-        name = "%s%s" % (self.namespace, self._field_name_from_uri(member))
-        if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
-            return _error("{0} - invalid member of {1}",
-                self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
-                doc_lines=self.doc_lines)
+        for name in self.namespace:
+            name = "%s%s" % (name, self._field_name_from_uri(member))
+            if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
+                return _error("{0} - invalid member of {1}",
+                    self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
+                    doc_lines=self.doc_lines)
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
@@ -117,7 +118,7 @@ class SchemaValidator(object):
         while True:
             found = False
             for (p, o) in self.schema_def.ontology[superclass]:
-                if self.subclass_uri == str(p):
+                if self.schema_def.lexicon['subclass'] == str(p):
                     found = True
                     classes.append(o)
                     superclass = o

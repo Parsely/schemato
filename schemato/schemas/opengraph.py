@@ -26,4 +26,4 @@ class OpenGraphValidator(RdfValidator):
         super(OpenGraphValidator, self).__init__(graph, doc_lines)
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)
-        self.namespace = "http://ogp.me/ns#"
+        self.namespace = ["http://ogp.me/ns#", "http://opengraphprotocol.org/schema/"]

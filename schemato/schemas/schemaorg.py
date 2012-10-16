@@ -11,4 +11,5 @@ class SchemaOrgValidator(MicrodataValidator):
     def __init__(self, graph, doc_lines):
         super(SchemaOrgValidator, self).__init__(graph, doc_lines)
         self.schema_def = SchemaOrgSchemaDef()
-        self.namespace = ["http://schema.org/"]
+        self.allowed_namespaces = ["http://schema.org/"]
+        self._find_namespaces(doc_lines)

@@ -77,6 +77,7 @@ class SchemaDef(object):
                     self.attributes_by_class[o].append(subj)
 
 
+
 # Implementation-specific subclasses
 class RdfSchemaDef(SchemaDef):
     def __init__(self):

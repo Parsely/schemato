@@ -16,6 +16,8 @@ class SchemaValidator(object):
     def __init__(self, graph, doc_lines):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
+        self.used_namespaces = []
+        self.allowed_namespaces = []
         self.graph = graph # a CompoundGraph
         log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines
@@ -52,7 +54,7 @@ class SchemaValidator(object):
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
             log.info("ignoring triple with field %s" % self._field_name_from_uri(pred))
             return
-        if self._namespace_from_uri(pred) not in self.namespace:
+        if self._namespace_from_uri(pred) not in self.used_namespaces:
             log.info("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
             return
 
@@ -97,7 +99,7 @@ class SchemaValidator(object):
         # for each namespace this validator knows about
         # this causes false errors for standards with multiple valid namespaces
         log.info("Validating member %s" % member)
-        for name in self.namespace:
+        for name in self.used_namespaces:
             name = "%s%s" % (name, self._field_name_from_uri(member))
             if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
                 return _error("{0} - invalid member of {1}",
@@ -148,6 +150,12 @@ class SchemaValidator(object):
         if len(parts) == 1:
             return "%s/" % '/'.join(uri.split('/')[:-1])
         return "%s#" % '#'.join(parts[:-1])
+
+    def _find_namespaces(self, doc_lines):
+        for line in doc_lines:
+            for ns in self.allowed_namespaces:
+                if ns in line:
+                    self.used_namespaces.append(ns)
 
 # what functionality do rdf and microdata validation not share
 class RdfValidator(SchemaValidator):

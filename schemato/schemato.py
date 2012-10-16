@@ -11,7 +11,7 @@ from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 
 
-log.basicConfig(level=log.INFO)
+log.basicConfig(level=log.DEBUG)
 
 class Schemato(object):
     def __init__(self, source):
@@ -36,6 +36,7 @@ class Schemato(object):
                 ret['ontology'].append(v.schema_def._ontology_file)
                 log.warning("%s validation result:" % (v.__class__.__name__))
                 for a in v.validate():
+                    ret['errors'].append(a)
                     log.warning(a)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)

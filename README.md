@@ -43,8 +43,8 @@ Take a look at the clean Python class definitions that describe the strategies:
 https://github.com/Parsely/schemato/blob/master/schemato/distillery.py
 
 There are two examples -- one that tries pp and falls back on
-schema.org/opengraph (called ParselyDistiller) and another the tries Schema.org
-and falls back on OpenGraph (called NewsDistiller).
+Schema.org/OpenGraph (called ``ParselyDistiller``) and another the tries Schema.org
+and falls back on OpenGraph (called ``NewsDistiller``).
 
 The distiller returns a clean Python dictionary that has all the extracted
 fields, as well as a dictionary describing which metadata standard was used to

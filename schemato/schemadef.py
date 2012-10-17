@@ -26,6 +26,7 @@ class SchemaDef(object):
         self.lexicon = {}
 
     def _pull_standard(self):
+        # TODO - implement me
         # if it has been > x days since last cache
         #   request the latest version of self._ontology_file
         #   self._cache_standard(pulled_file)
@@ -33,13 +34,14 @@ class SchemaDef(object):
         return self._ontology_file
 
     def _cache_standard(self, stdfile):
-        """the point of caching is to avoid extraneous web requests"""
+        # TODO - implement me
+        # the point of caching is to avoid extraneous web requests
         # if the cache is empty or if stdfile is different
         # from cached version, cache stdfile
         pass
 
     def _schema_nodes(self):
-        """parse the ontology file into a graph"""
+        """parse self._ontology_file into a graph"""
 
         name, ext = os.path.splitext(self._ontology_file)
         if ext in ['.ttl']:
@@ -67,6 +69,8 @@ class SchemaDef(object):
             yield (subj, pred, obj)
 
     def parse_ontology(self):
+        """place the ontology graph into a set of custom data structures
+        for use by the validator"""
         for subj, pred, obj in self._schema_nodes():
             leaves = [(subj, pred, obj)]
             if type(obj) == rt.BNode:
@@ -82,6 +86,8 @@ class SchemaDef(object):
 class RdfSchemaDef(SchemaDef):
     def __init__(self):
         super(RdfSchemaDef, self).__init__()
+        # TODO - certainly not the best way to do this, should probably use the
+        # pyRdfa/pyMicrodata graph APIs to make this more robust
         self.lexicon = {
             'range': "http://www.w3.org/2000/01/rdf-schema#range",
             'domain': "http://www.w3.org/2000/01/rdf-schema#domain",
@@ -93,6 +99,8 @@ class RdfSchemaDef(SchemaDef):
 class MicrodataSchemaDef(SchemaDef):
     def __init__(self):
         super(MicrodataSchemaDef, self).__init__()
+        # TODO - certainly not the best way to do this, should probably use the
+        # pyRdfa/pyMicrodata graph APIs to make this more robust
         self.lexicon = {
             'range': "http://schema.org/range",
             'domain': "http://schema.org/domain",

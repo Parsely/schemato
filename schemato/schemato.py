@@ -16,13 +16,13 @@ log.basicConfig(level=log.DEBUG)
 
 class Schemato(object):
     def __init__(self, source):
+        """init with a local filepath or a URI"""
         super(Schemato, self).__init__()
         text, url, doc_lines = self._read_stream(source)
         self.url = url
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
-        log.debug("in schemato init: %s" % self.graph.rdfa_graph)
-        # populate from a file somehow
+        # populate from a file somehow ?
         self.validators = []
         self.validators.append(RNewsValidator(self.graph, self.doc_lines))
         self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
@@ -44,6 +44,11 @@ class Schemato(object):
                 log.warning("no graph for %s" % v.__class__.__name__)
 
         return ret
+
+    def _read_stream(self, url):
+        """convenience wrapper around document reading methods"""
+        text, url = self._get_document(url)
+        return text, url, self._document_lines(text)
 
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""
@@ -72,6 +77,3 @@ class Schemato(object):
 
         return (text, url)
 
-    def _read_stream(self, url):
-        text, url = self._get_document(url)
-        return text, url, self._document_lines(text)

@@ -11,22 +11,24 @@ class SchemaValidator(object):
         This class knows about the file being validated, but it recieves that
         file as a graph and a doc_lines
         It does not perform any parsing logic on the file
-        It recieves a "validatable" object and returns errors
-    """
+        It recieves a "validatable" graph object and returns errors"""
     def __init__(self, graph, doc_lines):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
         self.used_namespaces = []
         self.allowed_namespaces = []
         self.graph = graph # a CompoundGraph
+        # consider checking the type of graph to ensure it's compound
         log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines
 
     def validate(self):
+        """Iterate over all triples in the graph and validate each one appropriately"""
         errorstring = "Are you calling validate from the base SchemaValidator class?"
 
         log.info("-------------------------------------------------------------------")
         log.info("Validating against %s" % self.schema_def.__class__.__name__)
+
         if not self.schema_def:
             raise ValueError("No schema definition supplied. %s" % errorstring)
         if not self.graph:
@@ -48,15 +50,11 @@ class SchemaValidator(object):
         return errors
 
     def _check_triple(self, (subj, pred, obj)):
-        """take a triple and compare it to the ontology, return indication
-        of whether it's adherent or not"""
+        """compare triple to ontology, return error or None"""
         # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
             log.info("ignoring triple with field %s" % self._field_name_from_uri(pred))
             return
-        #if self._namespace_from_uri(pred) not in self.used_namespaces:
-        #    log.info("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
-        #    return
 
         classes = []
         log.warning("Valid member %s found" % pred)
@@ -75,7 +73,6 @@ class SchemaValidator(object):
         classes.append(instanceof)
 
         # is this attribute a valid member of the class or superclasses?
-        # in the case of OG, this just means "is it a valid og field"
         member_invalid = self._validate_member(pred, classes, instanceof)
         if member_invalid:
             log.warning("Invalid member of class")
@@ -95,12 +92,11 @@ class SchemaValidator(object):
 
     def _validate_class(self, cl):
         """return error if class `cl` is not found in the ontology"""
+        # abstract, implemented in subclasses
         raise NotImplementedError
 
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
-        # for each namespace this validator knows about
-        # this causes false errors for standards with multiple valid namespaces
         log.info("Validating member %s" % member)
         if member not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
             return _error("{0} - invalid member of {1}",
@@ -109,6 +105,7 @@ class SchemaValidator(object):
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
+        # TODO - in general this is not actually an error but a warning
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             return _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
@@ -116,6 +113,7 @@ class SchemaValidator(object):
 
     def _superclasses_for_subject(self, graph, typeof):
         """helper, returns a list of all superclasses of a given class"""
+        # TODO - this replaces a fairly simple graph API query where it doesn't need to
         classes = []
         superclass = typeof
         while True:
@@ -131,6 +129,7 @@ class SchemaValidator(object):
 
     def _is_instance(self, (subj, pred, obj)):
         """helper, returns the class type of subj"""
+        # TODO - using the graph API could help avoid iterating over every item here
         for s,p,o in self.graph:
             if s == subj and str(p) == self.schema_def.lexicon['type']:
                 return o
@@ -138,6 +137,7 @@ class SchemaValidator(object):
 
     def _field_name_from_uri(self, uri):
         """helper, returns the name of an attribute (without namespace prefix)"""
+        # TODO - should use graph API
         uri = str(uri)
         parts = uri.split('#')
         if len(parts) == 1:
@@ -146,6 +146,8 @@ class SchemaValidator(object):
 
     def _namespace_from_uri(self, uri):
         """returns the expanded namespace prefix of a uri"""
+        # TODO - this could be helped a bunch with proper use of the graph API
+        # it seems a bit fragile to treat these as single string-splits
         uri = str(uri)
         parts = uri.split('#')
         if len(parts) == 1:
@@ -153,15 +155,18 @@ class SchemaValidator(object):
         return "%s#" % '#'.join(parts[:-1])
 
     def _find_namespaces(self, doc_lines):
+        # TODO - should be deprecated since it's based on an older paradigm
         for ns in self.allowed_namespaces:
             self.used_namespaces.append(ns)
 
-# what functionality do rdf and microdata validation not share
+
+#################### IMPL-SPECIFIC SUBCLASSES ####################
+
 class RdfValidator(SchemaValidator):
     def __init__(self, graph, doc_lines):
         super(RdfValidator, self).__init__(graph, doc_lines)
         self.parser = pyRdfa()
-        self.graph = self.graph.rdfa_graph
+        self.graph = self.graph.rdfa_graph # use the rdfa half of the compound graph
         log.info("in RdfValidator init %s" % self.graph)
 
     def _validate_class(self, cl):
@@ -175,7 +180,7 @@ class MicrodataValidator(SchemaValidator):
     def __init__(self, graph, doc_lines):
         super(MicrodataValidator, self).__init__(graph, doc_lines)
         self.parser = pyMicrodata()
-        self.graph = self.graph.microdata_graph
+        self.graph = self.graph.microdata_graph # use the microdata half of the compound
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():

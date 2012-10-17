@@ -7,7 +7,7 @@ parsed tuples from a document against this ontology.
 
 To test the validation, clone this repo and run
 
-    >>> from mrSchemato import Validator
+    >>> from schemato import Validator
     >>> validator = Validator()
     >>> validator.validate("test_documents/rdf.html")
 
@@ -27,10 +27,77 @@ The ``test_documents`` directory also includes four documents for testing the va
 and microdata, both with and without errors built in. Running the validator on
 either of the correct files should yield no errors.
 
+Distillers
+----------
+
+Schemato's distiller framework lets you implement strategies for creating a "normalized" set of metadata by mixing and matching metadata from different supported standards.
+
+Supported so far: 
+
+    * parsely-page
+    * OpenGraph
+    * Schema.org NewsArticle
+
+Take a look at the clean Python class definitions that describe the strategies:
+
+https://github.com/Parsely/schemato/blob/master/schemato/distillery.py
+
+There are two examples -- one that tries pp and falls back on
+schema.org/opengraph (called ParselyDistiller) and another the tries Schema.org
+and falls back on OpenGraph (called NewsDistiller).
+
+The distiller returns a clean Python dictionary that has all the extracted
+fields, as well as a dictionary describing which metadata standard was used to
+source each field. The framework is defined here:
+
+https://github.com/Parsely/schemato/blob/master/schemato/distillers.py
+
+Here is an example of usage:
+
+    >>> from schemato import Schemato
+    >>> from distillery import ParselyDistiller, NewsDistiller
+    >>> mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
+    >>> ParselyDistiller(mashable).distill()
+    {'author': u'Seth Fiegerman',
+    'image_url': u'http://5.mshcdn.com/wp-content/uploads/2012/10/iphone-lineup.jpg',
+    'link': u'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
+    'page_type': u'post',
+    'post_id': u'1432059',
+    'pub_date': u'2012-10-17T11:36:40+00:00',
+    'section': u'bus',
+    'site': 'Mashable',
+    'title': u"Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"}
+
+In this case, Mashable implements the parsely-page metadata field, which is
+used to source all the defined properties for this distiller.
+
+    >>> d = NewsDistiller(mashable)
+    >>> d.distill()
+    {'author': None,
+    'id': None,
+    'image_url': 'http://5.mshcdn.com/wp-content/uploads/2012/10/iphone-lineup.jpg',
+    'link': 'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
+    'pub_date': None,
+    'section': None,
+    'title': "Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"}
+    >>> d.sources
+    {'author': None,
+    'id': None,
+    'image_url': 'og:image',
+    'link': 'og:url',
+    'pub_date': None,
+    'section': None,
+    'title': 'og:title'}
+
+In this case, our strategy did not involve parsely-page, and instead used
+Schema.org and OpenGraph. Since Mashable does not implement Schema.org but does
+implement OpenGraph, it comes up with the fields it can. The ``sources`` property 
+shows which fields were populated and how they got their values.
+
 Hosted Service
 --------------
 
-The mrSchemato module is also incorporated into a web service that provides
+The schemato module is also incorporated into a web service that provides
 a nice frontend for the validation. To test this service locally, run
 ``python schemato_web.py``. Then navigate to localhost:5000, paste
 a url into the search bar, and click "Validate" to run a validation on the document.
@@ -51,4 +118,6 @@ downloaded at http://www.rabbitmq.com/download.html
 Authors
 -------
 
-schema.to is written and maintained by Emmett Butler for Parse.ly, Inc.
+schemato was designed nad implemented by Emmett Butler, Parse.ly, Inc.
+
+parts were contributed by Andrew Montalenti, Parse.ly

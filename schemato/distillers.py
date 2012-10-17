@@ -1,3 +1,5 @@
+from rdflib.term import URIRef, BNode
+
 class Distill(object):
     def __init__(self, *precedence, **kwargs):
         self.precedence = precedence
@@ -21,48 +23,145 @@ class DistillerMeta(type):
 
 class Distiller(object):
     __metaclass__ = DistillerMeta
-    def __init__(self, graph):
-        self.graph = graph
+
+    def __init__(self, schemato):
+        self.schemato = schemato
         self.distilled = {}
+        self.sources = {}
         # self.distill_fields provided by DistillerMeta
     
     def distill(self):
         for field in self.distill_fields:
-            self.distilled[field.name] = self.get_field(field)
+            value, path = self.get_field(field)
+            self.distilled[field.name] = value
+            self.sources[field.name] = path
         return self.distilled
 
     def get_field(self, field):
         for path in field.precedence:
             value = self.get_value(path)
             if value is not None:
-                return value
-        return None
+                return value, path
+        return (None, None)
 
+    PATH_PREFIX = {
+        "pp": "get_parsely_page",
+        "s": "get_schema_org",
+        "og": "get_open_graph"
+    }
     def parse_path(self, path):
         prefix, field = path.split(":")
         segments = field.split(".")
         return prefix, segments
 
+    def get_parsely_page(self, segments):
+        # for pp, we don't support nesting, so there will always
+        # be a single segment
+        assert len(segments) == 1
+        key = segments[0]
+        pp = self.schemato.parsely_page
+        if pp is not None and key in pp:
+            return pp[key]
+
+    def get_open_graph(self, segments):
+        # for opengraph, no nesting
+        assert len(segments) == 1
+        key = segments[0]
+        graph = self.schemato.graph.rdfa_graph
+        matches = graph.triples(
+            (None, URIRef("http://ogp.me/ns#{key}".format(key=key)), None)
+        )
+        for match in matches:
+            subj, pred, obj = match
+            return str(obj)
+        return None
+
+    def get_schema_org(self, segments):
+        graph = self.schemato.graph.microdata_graph
+        if len(segments) == 1:
+            segment = segments[0]
+            matches = graph.triples(
+                (None, URIRef("http://schema.org/{key}".format(key=segment)), None)
+            )
+            match = None
+            try:
+                match = matches.next()
+            except StopIteration:
+                pass
+            if match is None:
+                return None
+            subj, pred, obj = match
+            return str(obj)
+        elif len(segments) == 2:
+            root, nested = segments
+            discriminator, field = nested.split("/")
+            typematches = graph.triples(
+                (None,  URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://schema.org/{key}".format(key=discriminator)))
+            )
+            if field == "url":
+                for match in typematches:
+                    subj, pred, obj = match
+                    if isinstance(subj, URIRef):
+                        return str(subj)
+                return None
+            else:
+                typematch = None
+                try:
+                    typematch = typematches.next()
+                except StopIteration:
+                    typematch = (None, None, None)
+                subj, pred, obj = typematch
+                if subj is None:
+                    return None
+                valmatches = graph.triples(
+                    (subj, URIRef("http://schema.org/{key}".format(key=field)), None)
+                )
+                valmatch = None
+                try:
+                    valmatch = valmatches.next()
+                except StopIteration:
+                    valmatch = (None, None, None)
+                subj, pred, obj = valmatch
+                if obj is None:
+                    return None
+                return str(obj)
+        else:
+            raise NotImplemented("Only 1 or 2 path segments currently supported")
+            
     def get_value(self, path):
         prefix, segments = self.parse_path(path)
         i = 0
+        method_name = self.PATH_PREFIX[prefix]
+        method = getattr(self, method_name)
         for segment in segments:
             print " " * i, prefix, segment
             i += 1
-        # using self.graph and locator, fetch field
-
+        ret = method(segments)
+        if ret is not None:
+            print " " * i + " -> " + ret
+        return ret
 
 class ParselyDistiller(Distiller):
-    title = Distill("pp:title", "s:title", "ogp:title")
-    image_url = Distill("pp:image_url", "s:associatedMedia.url", "ogp:image")
-    pub_date = Distill("pp:title", "s:datePublished")
-    author = Distill("pp:author", "s:creator.name")
+    site = Distill("og:site_name")
+    title = Distill("pp:title", "s:headline", "og:title")
+    image_url = Distill("s:associatedMedia.ImageObject/url", "pp:image_url", "og:image")
+    pub_date = Distill("pp:pub_date", "s:datePublished")
+    author = Distill("s:creator.Person/name", "pp:author")
     section = Distill("pp:section", "s:articleSection")
-    link = Distill("pp:link", "ogp:url")
+    link = Distill("og:url", "pp:link")
     post_id = Distill("pp:post_id", "s:identifier")
     page_type = Distill("pp:type")
 
 if __name__ == "__main__":
     from pprint import pprint
-    p = ParselyDistiller({})
-    pprint(p.distill())
+    from schemato import Schemato
+    print "NY Daily News Example"
+    print "====================="
+    p = ParselyDistiller(Schemato("http://www.nydailynews.com/news/politics/obama-fights-back-2nd-debate-romney-article-1.1185271"))
+    p.distill()
+    pprint({"distilled": p.distilled, "sources": p.sources})
+    print "Mashable Example"
+    print "================"
+    p = ParselyDistiller(Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/"))
+    p.distill()
+    pprint({"distilled": p.distilled, "sources": p.sources})

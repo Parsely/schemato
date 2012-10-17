@@ -9,6 +9,7 @@ from schemas.rnews import RNewsValidator
 from schemas.opengraph import OpenGraphValidator
 from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
+from auxparsers import ParselyPageParser
 
 
 log.basicConfig(level=log.DEBUG)
@@ -26,6 +27,7 @@ class Schemato(object):
         self.validators.append(RNewsValidator(self.graph, self.doc_lines))
         self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
         self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
+        self.parsely_page = ParselyPageParser().parse(text, doc_lines)
 
     def validate(self):
         ret = defaultdict(list)

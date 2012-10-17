@@ -1,4 +1,5 @@
 rdflib
 lepl
+html5lib
 -e git+git://github.com/RDFLib/pyrdfa3.git#egg=pyrdfa3
 -e git+git://github.com/RDFLib/pymicrodata.git#egg=pyMicrodata

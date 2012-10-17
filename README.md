@@ -11,7 +11,7 @@ This is a validator for the a number of embedded metadata standards. It
 works by reading the object ontology and comparing each of a set of
 parsed tuples from a document against this ontology.
 
-To test the validation, clone this repo and run
+To test the validation, clone this repo, pip install the requirements, and run
 
     >>> from schemato import Validator
     >>> validator = Validator()
@@ -20,14 +20,14 @@ To test the validation, clone this repo and run
 this will run a validation on a correctly-implemented RDFa document (rdf.html). To run
 a validation on a document with errors, use one of the error test files
 
-``>>> validator.validate("test_documents/schema_errors.html")``
+``>>> Schemato("test_documents/schema_errors.html").validate()``
 
 The full schema.org standard is now also supported. You can validate any page
 that uses this standard against the RDFa ontology hosted at schema.org. To
 test this, you can find an arbitrary nytimes.com article, or copy and paste
 this example
 
-``>>> validator.validate("http://www.nytimes.com/2012/07/19/world/middleeast/.....html")``
+``>>> Schemato("http://www.nytimes.com/2012/07/19/world/middleeast/.....html").validate()``
 
 The ``test_documents`` directory also includes four documents for testing the validation in RDFa
 and microdata, both with and without errors built in. Running the validator on

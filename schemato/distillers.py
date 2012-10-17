@@ -141,27 +141,3 @@ class Distiller(object):
             print " " * i + " -> " + ret
         return ret
 
-class ParselyDistiller(Distiller):
-    site = Distill("og:site_name")
-    title = Distill("pp:title", "s:headline", "og:title")
-    image_url = Distill("s:associatedMedia.ImageObject/url", "pp:image_url", "og:image")
-    pub_date = Distill("pp:pub_date", "s:datePublished")
-    author = Distill("s:creator.Person/name", "pp:author")
-    section = Distill("pp:section", "s:articleSection")
-    link = Distill("og:url", "pp:link")
-    post_id = Distill("pp:post_id", "s:identifier")
-    page_type = Distill("pp:type")
-
-if __name__ == "__main__":
-    from pprint import pprint
-    from schemato import Schemato
-    print "NY Daily News Example"
-    print "====================="
-    p = ParselyDistiller(Schemato("http://www.nydailynews.com/news/politics/obama-fights-back-2nd-debate-romney-article-1.1185271"))
-    p.distill()
-    pprint({"distilled": p.distilled, "sources": p.sources})
-    print "Mashable Example"
-    print "================"
-    p = ParselyDistiller(Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/"))
-    p.distill()
-    pprint({"distilled": p.distilled, "sources": p.sources})

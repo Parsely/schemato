@@ -124,6 +124,6 @@ downloaded at http://www.rabbitmq.com/download.html
 Authors
 -------
 
-schemato was designed nad implemented by Emmett Butler, Parse.ly, Inc.
+schemato was designed and implemented by Emmett Butler, Parse.ly, Inc.
 
 parts were contributed by Andrew Montalenti, Parse.ly

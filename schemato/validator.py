@@ -54,20 +54,21 @@ class SchemaValidator(object):
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
             log.info("ignoring triple with field %s" % self._field_name_from_uri(pred))
             return
-        if self._namespace_from_uri(pred) not in self.used_namespaces:
-            log.info("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
-            return
+        #if self._namespace_from_uri(pred) not in self.used_namespaces:
+        #    log.info("unknown namespace %s for triple, discarding" % self._namespace_from_uri(pred))
+        #    return
 
         classes = []
         log.warning("Valid member %s found" % pred)
 
-        instanceof = self._is_instance((subj, pred, obj)) or self.source
+        instanceof = self._is_instance((subj, pred, obj))
 
         # this method should differentiate between an "error" and a "warning"
         # since not all issues with an implementation worth telling
         # the user about are actual "errors", just things to keep in mind
         class_invalid = self._validate_class(instanceof)
         if class_invalid:
+            log.warning("Invalid class %s" % instanceof)
             return class_invalid
 
         classes = self._superclasses_for_subject(self.graph, instanceof)
@@ -77,10 +78,12 @@ class SchemaValidator(object):
         # in the case of OG, this just means "is it a valid og field"
         member_invalid = self._validate_member(pred, classes, instanceof)
         if member_invalid:
+            log.warning("Invalid member of class")
             return member_invalid
 
         dupe_invalid = self._validate_duplication((subj, pred), instanceof)
         if dupe_invalid:
+            log.warning("Duplication found")
             return dupe_invalid
 
         # collect a list of checked attributes
@@ -99,12 +102,10 @@ class SchemaValidator(object):
         # for each namespace this validator knows about
         # this causes false errors for standards with multiple valid namespaces
         log.info("Validating member %s" % member)
-        for name in self.used_namespaces:
-            name = "%s%s" % (name, self._field_name_from_uri(member))
-            if rt.URIRef(name) not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
-                return _error("{0} - invalid member of {1}",
-                    self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
-                    doc_lines=self.doc_lines)
+        if member not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
+            return _error("{0} - invalid member of {1}",
+                self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
+                doc_lines=self.doc_lines)
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
@@ -152,10 +153,8 @@ class SchemaValidator(object):
         return "%s#" % '#'.join(parts[:-1])
 
     def _find_namespaces(self, doc_lines):
-        for line in doc_lines:
-            for ns in self.allowed_namespaces:
-                if ns in line:
-                    self.used_namespaces.append(ns)
+        for ns in self.allowed_namespaces:
+            self.used_namespaces.append(ns)
 
 # what functionality do rdf and microdata validation not share
 class RdfValidator(SchemaValidator):
@@ -168,7 +167,7 @@ class RdfValidator(SchemaValidator):
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = self._field_name_from_uri(cl)
-            return _error("{0} - invalid class", self.field_name_from_uri(cl),
+            return _error("{0} - invalid class", self._field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
 
 
@@ -181,6 +180,6 @@ class MicrodataValidator(SchemaValidator):
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = str(cl)
-            return _error("{0} - invalid class", self.field_name_from_uri(cl),
+            return _error("{0} - invalid class", self._field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
 

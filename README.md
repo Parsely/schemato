@@ -1,5 +1,11 @@
-schema.org/rNews Validator
-==========================
+schemato
+========
+
+Meet Mr. Schemato, the friendly semantic web validator and distiller that is
+making metadata cool again.
+
+Validator
+---------
 
 This is a validator for the a number of embedded metadata standards. It
 works by reading the object ontology and comparing each of a set of
@@ -27,8 +33,8 @@ The ``test_documents`` directory also includes four documents for testing the va
 and microdata, both with and without errors built in. Running the validator on
 either of the correct files should yield no errors.
 
-Distillers
-----------
+Distiller
+---------
 
 Schemato's distiller framework lets you implement strategies for creating a "normalized" set of metadata by mixing and matching metadata from different supported standards.
 

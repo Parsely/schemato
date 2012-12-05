@@ -7,6 +7,7 @@ import sys
 from errors import _error
 from graph import Graph
 from settings import *
+from parsely_page import ParselyPageValidator
 
 
 class Validator(object):

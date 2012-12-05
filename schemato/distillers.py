@@ -29,7 +29,7 @@ class Distiller(object):
         self.distilled = {}
         self.sources = {}
         # self.distill_fields provided by DistillerMeta
-    
+
     def distill(self):
         for field in self.distill_fields:
             value, path = self.get_field(field)
@@ -127,7 +127,7 @@ class Distiller(object):
                 return str(obj)
         else:
             raise NotImplemented("Only 1 or 2 path segments currently supported")
-            
+
     def get_value(self, path):
         prefix, segments = self.parse_path(path)
         i = 0

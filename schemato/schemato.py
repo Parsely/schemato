@@ -35,14 +35,17 @@ class Schemato(object):
         log.debug("starting validate")
         for v in self.validators:
             if v.graph:
+                ret['errors'] = []
                 ret['ontology'].append(v.schema_def._ontology_file)
-                log.warning("%s validation result:" % (v.__class__.__name__))
+                log.warning("%s validation:" % (v.__class__.__name__))
                 for a in v.validate():
                     ret['errors'].append(a)
                     log.warning(a)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)
+        ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
 
+        log.info("returned from validate() : %s", ret)
         return ret
 
     def _read_stream(self, url):

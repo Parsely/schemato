@@ -57,7 +57,11 @@ class SchemaValidator(object):
             return
 
         classes = []
-        log.warning("Valid member %s found" % pred)
+        log.warning("Possible member %s found" % pred)
+
+        if self._namespace_from_uri(pred) not in self.allowed_namespaces:
+            log.info("Member %s does not use an allowed namespace", pred)
+            return
 
         instanceof = self._is_instance((subj, pred, obj))
 
@@ -99,17 +103,21 @@ class SchemaValidator(object):
         """return error if `member` is not a member of any class in `classes`"""
         log.info("Validating member %s" % member)
         if member not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
+            log.info("failure")
             return _error("{0} - invalid member of {1}",
                 self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
                 doc_lines=self.doc_lines)
+        log.info("success")
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
         # TODO - in general this is not actually an error but a warning
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
+            log.info("failure")
             return _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
+        log.info("success")
 
     def _superclasses_for_subject(self, graph, typeof):
         """helper, returns a list of all superclasses of a given class"""
@@ -147,7 +155,7 @@ class SchemaValidator(object):
     def _namespace_from_uri(self, uri):
         """returns the expanded namespace prefix of a uri"""
         # TODO - this could be helped a bunch with proper use of the graph API
-        # it seems a bit fragile to treat these as single string-splits
+        # it seems a bit fragile to treat these as simple string-splits
         uri = str(uri)
         parts = uri.split('#')
         if len(parts) == 1:

@@ -53,7 +53,7 @@ class SchemaValidator(object):
         """compare triple to ontology, return error or None"""
         # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
-            log.info("ignoring triple with field %s" % self._field_name_from_uri(pred))
+            log.info("ignoring triple with predicate '%s'" % self._field_name_from_uri(pred))
             return
 
         classes = []
@@ -167,8 +167,6 @@ class SchemaValidator(object):
         for ns in self.allowed_namespaces:
             self.used_namespaces.append(ns)
 
-
-#################### IMPL-SPECIFIC SUBCLASSES ####################
 
 class RdfValidator(SchemaValidator):
     def __init__(self, graph, doc_lines):

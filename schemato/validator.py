@@ -102,12 +102,32 @@ class SchemaValidator(object):
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
         log.info("Validating member %s" % member)
-        if member not in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
+
+        stripped_attribute_names = []
+        for cl in classes:
+            sublist = self.schema_def.attributes_by_class[cl]
+            for field in sublist:
+                sublist[sublist.index(field)] = self._field_name_from_uri(field)
+            stripped_attribute_names.append(sublist)
+
+        if self._field_name_from_uri(member) in sum(stripped_attribute_names, []):
+            # if the field/namespace pair is found, no errors
+            if member in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
+                log.info("success")
+                return None
+            # only found the field but not namespace, warning
+            elif self._namespace_from_uri(member) in self.allowed_namespaces:
+                # return a warning here - the member's namespace is not found in the
+                # official standard, but is included in allowed_namespaces
+                log.info("warning - unofficially allowed namespace")
+                return None
+        # found neither, error
+        else:
             log.info("failure")
             return _error("{0} - invalid member of {1}",
                 self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
                 doc_lines=self.doc_lines)
-        log.info("success")
+
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""

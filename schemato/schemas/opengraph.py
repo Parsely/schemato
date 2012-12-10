@@ -1,4 +1,5 @@
 import rdflib.term as rt
+import logging as log
 
 from validator import RdfValidator
 from schemadef import RdfSchemaDef

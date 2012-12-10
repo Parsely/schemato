@@ -103,6 +103,9 @@ class SchemaValidator(object):
         """return error if `member` is not a member of any class in `classes`"""
         log.info("Validating member %s" % member)
 
+        # TODO - recalculating this list for every member is inefficient
+        # calculate it once at the beginning, or consider replacing
+        # attributes_by_class with it somehow
         stripped_attribute_names = []
         for cl in classes:
             sublist = self.schema_def.attributes_by_class[cl]

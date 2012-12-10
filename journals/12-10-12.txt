@@ -1,0 +1,36 @@
+Schemato bugfixes
+December 10th
+
+Since last week I was bothered by the problem that schemato seemed to be
+having where it would fail to correctly validate fields that use one of the
+nonstandard opengraph namespaces ("http://opengraphprotocol.org/schema"), for
+example http://opengraphprotocol.org/schema/description.
+
+Things I noticed:
+opengraphprotocol.org/schema redirects to ogp.me
+ogp.me is the only og: namespace expansion listed in the official turtle standard
+the new york times correctly includes opengraphprotocol.org in their xmlns
+opengraphprotocol.org appears in rdf_graph.namespaces()
+
+The last one bothered me for a bit. After doing a bunch of digging in the
+pyrdfa source, I found that a pyrdfa graph is automatically populated with
+a bunch of default namespace/prefix pairs, including ogp.me.
+
+opengraphprotocol.org appears in namespaces() because although it's not in these
+defaults, it is properly listed in the document's xmlns.
+
+Then the problem is this: nytimes uses a namespace prefix that is *not* in the
+official standard, but is one that *I* know to be at least marginally
+allowable by a validator. Then, how do we allow this nonstandard namespace
+through while warning that it might not be standard?
+
+Answer:
+Maintain a list of nonstandard but still allowed namespace prefixes for each
+standard. When validating an attribute, first strip it of its namespace
+prefix, leaving just the field name (eg
+http://opengraphprotocol.org/schema/url -> url). See if this field name is
+found in the list of official attributes. If it is, check for the namespace's
+presence in the list of allowed namespaces.
+
+This solution allows valid fields and differentiates standard namespaces from
+"allowed, but nonstandard" namespaces.

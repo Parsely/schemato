@@ -24,7 +24,8 @@ class Schemato(object):
         self.doc_lines = doc_lines
         # populate from a file somehow ?
         self.validators = []
-        #self.validators.append(RNewsValidator(self.graph, self.doc_lines))
+        # TODO - add a dublin core validator
+        self.validators.append(RNewsValidator(self.graph, self.doc_lines))
         self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
         #self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
         self.parsely_page = ParselyPageParser().parse(text, doc_lines)

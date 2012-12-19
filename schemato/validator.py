@@ -1,10 +1,12 @@
 import rdflib.term as rt
 import logging as log
+import sys
 
 from pyRdfa import pyRdfa
 from pyMicrodata import pyMicrodata
 
 from errors import error_line, _error
+import compound_graph
 
 class SchemaValidator(object):
     """ASSUMPTIONS:
@@ -17,8 +19,13 @@ class SchemaValidator(object):
         self.schema_def = None
         self.used_namespaces = []
         self.allowed_namespaces = []
-        self.graph = graph # a CompoundGraph
-        # consider checking the type of graph to ensure it's compound
+
+        if isinstance(graph, compound_graph.CompoundGraph):
+            self.graph = graph
+        else:
+            log.error("Validatable graph must be of type CompoundGraph")
+            return
+
         log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines
 
@@ -198,7 +205,6 @@ class RdfValidator(SchemaValidator):
         super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph # use the rdfa half of the compound graph
-        log.info("in RdfValidator init %s" % self.graph)
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():

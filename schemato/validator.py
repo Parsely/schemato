@@ -57,7 +57,6 @@ class SchemaValidator(object):
             warning = self._check_triple((s,p,o))
             if warning:
                 result.add_error(warning)
-        # should return a ValidationResult object
         return result
 
     def _check_triple(self, (subj, pred, obj)):

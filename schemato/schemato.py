@@ -37,23 +37,20 @@ class Schemato(object):
         self.parsely_page = ParselyPageParser().parse(text, doc_lines)
 
     def validate(self):
-        ret = defaultdict(list)
+        results = []
 
-        log.debug("starting validate")
         for v in self.validators:
             if v.graph:
-                ret['errors'] = []
-                ret['ontology'].append(v.schema_def._ontology_file)
                 log.warning("%s validation:" % (v.__class__.__name__))
-                for a in v.validate().warnings:
-                    ret['errors'].append(a.to_json())
-                    log.warning(a)
+                result = v.validate()
+                results.append(result)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)
-        ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
 
-        log.info("returned from validate() : %s", ret)
-        return ret
+        log.info("returned from validate() : %s", results)
+        for res in results:
+            log.info(res.to_json())
+        return results
 
     def set_loglevel(self, loglevel):
         if hasattr(log, loglevel):

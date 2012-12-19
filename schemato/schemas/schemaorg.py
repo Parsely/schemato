@@ -8,8 +8,8 @@ class SchemaOrgSchemaDef(MicrodataSchemaDef):
         self.parse_ontology()
 
 class SchemaOrgValidator(MicrodataValidator):
-    def __init__(self, graph, doc_lines):
-        super(SchemaOrgValidator, self).__init__(graph, doc_lines)
+    def __init__(self, graph, doc_lines, url=""):
+        super(SchemaOrgValidator, self).__init__(graph, doc_lines, url=url)
         self.schema_def = SchemaOrgSchemaDef()
         self.allowed_namespaces = ["http://schema.org/"]
         self._find_namespaces(doc_lines)

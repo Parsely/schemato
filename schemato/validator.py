@@ -1,10 +1,13 @@
 import rdflib.term as rt
 import logging as log
+import sys
 
 from pyRdfa import pyRdfa
 from pyMicrodata import pyMicrodata
 
 from errors import error_line, _error
+from validationresult import ValidationResult, ValidationWarning
+import compound_graph
 
 class SchemaValidator(object):
     """ASSUMPTIONS:
@@ -12,13 +15,18 @@ class SchemaValidator(object):
         file as a graph and a doc_lines
         It does not perform any parsing logic on the file
         It recieves a "validatable" graph object and returns errors"""
-    def __init__(self, graph, doc_lines):
+    def __init__(self, graph, doc_lines, url=""):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
         self.used_namespaces = []
         self.allowed_namespaces = []
-        self.graph = graph # a CompoundGraph
-        # consider checking the type of graph to ensure it's compound
+
+        if isinstance(graph, compound_graph.CompoundGraph):
+            self.graph = graph
+        else:
+            log.error("Validatable graph must be of type CompoundGraph")
+            return
+
         log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines
 
@@ -36,18 +44,20 @@ class SchemaValidator(object):
 
         log.info("in validator.validate: %s" % self.graph)
 
-        errors = []
+        # TODO - this should choose the actually used namespace, not just
+        # the first one in the list
+        result = ValidationResult(self.allowed_namespaces[0])
+
         self.checked_attributes = []
         for s,p,o in self.graph:
             log.info("")
             log.info("subj: " + s)
             log.info("pred: " + p)
             log.info("obj: " + o)
-            error = self._check_triple((s,p,o))
-            if error and error not in errors:
-                errors.append(error)
-        # should return a ValidationResult object
-        return errors
+            warning = self._check_triple((s,p,o))
+            if warning:
+                result.add_error(warning)
+        return result
 
     def _check_triple(self, (subj, pred, obj)):
         """compare triple to ontology, return error or None"""
@@ -103,30 +113,36 @@ class SchemaValidator(object):
         """return error if `member` is not a member of any class in `classes`"""
         log.info("Validating member %s" % member)
 
+        # TODO - recalculating this list for every member is inefficient
+        # calculate it once at the beginning, or consider replacing
+        # attributes_by_class with it somehow
         stripped_attribute_names = []
+        sublist = []
         for cl in classes:
-            sublist = self.schema_def.attributes_by_class[cl]
+            for attr in self.schema_def.attributes_by_class[cl]:
+                sublist.append(attr)
             for field in sublist:
                 sublist[sublist.index(field)] = self._field_name_from_uri(field)
             stripped_attribute_names.append(sublist)
 
         if self._field_name_from_uri(member) in sum(stripped_attribute_names, []):
-            # if the field/namespace pair is found, no errors
             if member in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
                 log.info("success")
                 return None
-            # only found the field but not namespace, warning
             elif self._namespace_from_uri(member) in self.allowed_namespaces:
-                # return a warning here - the member's namespace is not found in the
+                # TODO - return a warning here - the member's namespace is not found in the
                 # official standard, but is included in allowed_namespaces
                 log.info("warning - unofficially allowed namespace")
-                return None
-        # found neither, error
+                err = _error("Unoficially allowed namespace {0}",
+                    self._namespace_from_uri(member), doc_lines=self.doc_lines)
+                return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         else:
             log.info("failure")
-            return _error("{0} - invalid member of {1}",
+            err = _error("{0} - invalid member of {1}",
                 self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
                 doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+
 
 
     def _validate_duplication(self, (subj, pred), cl):
@@ -135,8 +151,9 @@ class SchemaValidator(object):
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             log.info("failure")
-            return _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
+            err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
         log.info("success")
 
     def _superclasses_for_subject(self, graph, typeof):
@@ -189,11 +206,10 @@ class SchemaValidator(object):
 
 
 class RdfValidator(SchemaValidator):
-    def __init__(self, graph, doc_lines):
-        super(RdfValidator, self).__init__(graph, doc_lines)
+    def __init__(self, graph, doc_lines, url=""):
+        super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph # use the rdfa half of the compound graph
-        log.info("in RdfValidator init %s" % self.graph)
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
@@ -203,8 +219,8 @@ class RdfValidator(SchemaValidator):
 
 
 class MicrodataValidator(SchemaValidator):
-    def __init__(self, graph, doc_lines):
-        super(MicrodataValidator, self).__init__(graph, doc_lines)
+    def __init__(self, graph, doc_lines, url=""):
+        super(MicrodataValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyMicrodata()
         self.graph = self.graph.microdata_graph # use the microdata half of the compound
 

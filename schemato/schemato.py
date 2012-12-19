@@ -5,48 +5,60 @@ from collections import defaultdict
 
 import rdflib
 
-from schemas.rnews import RNewsValidator
-from schemas.opengraph import OpenGraphValidator
-from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 from auxparsers import ParselyPageParser
 
+import settings
 
-log.basicConfig(level=log.DEBUG)
 
 class Schemato(object):
-    def __init__(self, source):
+    def __init__(self, source, loglevel="ERROR"):
         """init with a local filepath or a URI"""
         super(Schemato, self).__init__()
+        self.set_loglevel(loglevel)
         text, url, doc_lines = self._read_stream(source)
         self.url = url
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
-        # populate from a file somehow ?
         self.validators = []
-        #self.validators.append(RNewsValidator(self.graph, self.doc_lines))
-        self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
-        #self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
+
+        def import_module(name):
+            m = __import__(name)
+            for n in name.split(".")[1:]:
+                m = getattr(m, n)
+            return m
+
+        for module_string in settings.VALIDATOR_MODULES:
+            v_package = import_module('.'.join(module_string.split('.')[:-1]))
+            v_instance = getattr(v_package, module_string.split('.')[-1])(self.graph, self.doc_lines, url=self.url)
+            self.validators.append(v_instance)
+
+        # TODO - add a dublin core validator
         self.parsely_page = ParselyPageParser().parse(text, doc_lines)
 
     def validate(self):
-        ret = defaultdict(list)
+        results = []
 
-        log.debug("starting validate")
         for v in self.validators:
             if v.graph:
-                ret['errors'] = []
-                ret['ontology'].append(v.schema_def._ontology_file)
                 log.warning("%s validation:" % (v.__class__.__name__))
-                for a in v.validate():
-                    ret['errors'].append(a)
-                    log.warning(a)
+                result = v.validate()
+                results.append(result)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)
         ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
 
-        log.info("returned from validate() : %s", ret)
-        return ret
+        log.info("returned from validate() : %s", results)
+        for res in results:
+            log.info(res.to_json())
+        return results
+
+    def set_loglevel(self, loglevel):
+        if hasattr(log, loglevel):
+            log.basicConfig(level=getattr(log, loglevel))
+        else:
+            log.basicConfig(level=log.ERROR)
+            log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _read_stream(self, url):
         """convenience wrapper around document reading methods"""

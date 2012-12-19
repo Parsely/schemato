@@ -23,7 +23,7 @@ class OpenGraphSchemaDef(RdfSchemaDef):
                     self.attributes_by_class[self.source].append(s)
 
 class OpenGraphValidator(RdfValidator):
-    def __init__(self, graph, doc_lines, url):
+    def __init__(self, graph, doc_lines, url=""):
         super(OpenGraphValidator, self).__init__(graph, doc_lines)
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)

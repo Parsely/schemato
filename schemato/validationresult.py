@@ -1,17 +1,31 @@
+import json
+
+
 class ValidationResult(object):
-    def __init__(self):
+    ERROR = 1
+    WARNING = 2
+
+    def __init__(self, namespace):
         super(ValidationResult, self).__init__()
         self.warnings = []
+        self.namespace = namespace
 
-    def add_warning(self, string):
-        self.warnings.append(ValidationWarning(2, string))
-
-    def add_error(self, string):
-        self.warnings.append(ValidationWarning(1, string))
+    def add_error(self, warning):
+        self.warnings.append(warning)
 
 
 class ValidationWarning(object):
-    def __init__(self, level, string):
+    def __init__(self, level, string, line, line_num):
         super(ValidationWarning, self).__init__()
-        self.level = level # can be warning, error (enforce)
+        self.level = level
         self.string = string
+        self.line_num = line_num
+        self.line_text = line
+
+    def to_json(self):
+        mapping = {}
+        mapping['level'] = "Error" if self.level == ValidationResult.ERROR else "Warning"
+        mapping['string'] = self.string
+        mapping['line'] = self.line_text
+        mapping['num'] = self.line_num
+        return json.dumps(mapping)

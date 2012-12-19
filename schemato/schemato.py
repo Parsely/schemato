@@ -45,8 +45,8 @@ class Schemato(object):
                 ret['errors'] = []
                 ret['ontology'].append(v.schema_def._ontology_file)
                 log.warning("%s validation:" % (v.__class__.__name__))
-                for a in v.validate():
-                    ret['errors'].append(a)
+                for a in v.validate().warnings:
+                    ret['errors'].append(a.to_json())
                     log.warning(a)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)

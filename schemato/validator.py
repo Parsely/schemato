@@ -6,6 +6,7 @@ from pyRdfa import pyRdfa
 from pyMicrodata import pyMicrodata
 
 from errors import error_line, _error
+from validationresult import ValidationResult, ValidationWarning
 import compound_graph
 
 class SchemaValidator(object):
@@ -43,18 +44,21 @@ class SchemaValidator(object):
 
         log.info("in validator.validate: %s" % self.graph)
 
-        errors = []
+        # TODO - this should choose the actually used namespace, not just
+        # the first one in the list
+        result = ValidationResult(self.allowed_namespaces[0])
+
         self.checked_attributes = []
         for s,p,o in self.graph:
             log.info("")
             log.info("subj: " + s)
             log.info("pred: " + p)
             log.info("obj: " + o)
-            error = self._check_triple((s,p,o))
-            if error and error not in errors:
-                errors.append(error)
+            warning = self._check_triple((s,p,o))
+            if warning:
+                result.add_error(warning)
         # should return a ValidationResult object
-        return errors
+        return result
 
     def _check_triple(self, (subj, pred, obj)):
         """compare triple to ontology, return error or None"""
@@ -123,22 +127,22 @@ class SchemaValidator(object):
             stripped_attribute_names.append(sublist)
 
         if self._field_name_from_uri(member) in sum(stripped_attribute_names, []):
-            # if the field/namespace pair is found, no errors
             if member in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
                 log.info("success")
                 return None
-            # only found the field but not namespace, warning
             elif self._namespace_from_uri(member) in self.allowed_namespaces:
-                # return a warning here - the member's namespace is not found in the
+                # TODO - return a warning here - the member's namespace is not found in the
                 # official standard, but is included in allowed_namespaces
                 log.info("warning - unofficially allowed namespace")
-                return None
-        # found neither, error
+                err = _error("Unoficially allowed namespace {0}",
+                    self._namespace_from_uri(member), doc_lines=self.doc_lines)
+                return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         else:
             log.info("failure")
-            return _error("{0} - invalid member of {1}",
+            err = _error("{0} - invalid member of {1}",
                 self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
                 doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 
 
     def _validate_duplication(self, (subj, pred), cl):
@@ -147,8 +151,9 @@ class SchemaValidator(object):
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             log.info("failure")
-            return _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
+            err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
         log.info("success")
 
     def _superclasses_for_subject(self, graph, typeof):

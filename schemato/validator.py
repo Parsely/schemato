@@ -12,7 +12,7 @@ class SchemaValidator(object):
         file as a graph and a doc_lines
         It does not perform any parsing logic on the file
         It recieves a "validatable" graph object and returns errors"""
-    def __init__(self, graph, doc_lines):
+    def __init__(self, graph, doc_lines, url=""):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
         self.used_namespaces = []
@@ -194,8 +194,8 @@ class SchemaValidator(object):
 
 
 class RdfValidator(SchemaValidator):
-    def __init__(self, graph, doc_lines):
-        super(RdfValidator, self).__init__(graph, doc_lines)
+    def __init__(self, graph, doc_lines, url=""):
+        super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph # use the rdfa half of the compound graph
         log.info("in RdfValidator init %s" % self.graph)
@@ -208,8 +208,8 @@ class RdfValidator(SchemaValidator):
 
 
 class MicrodataValidator(SchemaValidator):
-    def __init__(self, graph, doc_lines):
-        super(MicrodataValidator, self).__init__(graph, doc_lines)
+    def __init__(self, graph, doc_lines, url=""):
+        super(MicrodataValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyMicrodata()
         self.graph = self.graph.microdata_graph # use the microdata half of the compound
 

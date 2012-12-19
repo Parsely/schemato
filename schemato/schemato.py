@@ -5,11 +5,10 @@ from collections import defaultdict
 
 import rdflib
 
-from schemas.rnews import RNewsValidator
-from schemas.opengraph import OpenGraphValidator
-from schemas.schemaorg import SchemaOrgValidator
 from compound_graph import CompoundGraph
 from auxparsers import ParselyPageParser
+
+import settings
 
 
 class Schemato(object):
@@ -21,12 +20,20 @@ class Schemato(object):
         self.url = url
         self.graph = CompoundGraph(url)
         self.doc_lines = doc_lines
-        # populate from a file somehow ?
         self.validators = []
+
+        def import_module(name):
+            m = __import__(name)
+            for n in name.split(".")[1:]:
+                m = getattr(m, n)
+            return m
+
+        for module_string in settings.VALIDATOR_MODULES:
+            v_package = import_module('.'.join(module_string.split('.')[:-1]))
+            v_instance = getattr(v_package, module_string.split('.')[-1])(self.graph, self.doc_lines, url=self.url)
+            self.validators.append(v_instance)
+
         # TODO - add a dublin core validator
-        self.validators.append(RNewsValidator(self.graph, self.doc_lines))
-        self.validators.append(OpenGraphValidator(self.graph, self.doc_lines, self.url))
-        #self.validators.append(SchemaOrgValidator(self.graph, self.doc_lines))
         self.parsely_page = ParselyPageParser().parse(text, doc_lines)
 
     def validate(self):

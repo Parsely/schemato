@@ -46,7 +46,6 @@ class Schemato(object):
                 results.append(result)
             else:
                 log.warning("no graph for %s" % v.__class__.__name__)
-        ret['msg'] = "Validation complete - %s errors found" % (len(ret['errors']) if len(ret['errors']) > 0 else "no")
 
         log.info("returned from validate() : %s", results)
         for res in results:

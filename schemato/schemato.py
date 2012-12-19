@@ -12,12 +12,11 @@ from compound_graph import CompoundGraph
 from auxparsers import ParselyPageParser
 
 
-log.basicConfig(level=log.DEBUG)
-
 class Schemato(object):
-    def __init__(self, source):
+    def __init__(self, source, loglevel="ERROR"):
         """init with a local filepath or a URI"""
         super(Schemato, self).__init__()
+        self.set_loglevel(loglevel)
         text, url, doc_lines = self._read_stream(source)
         self.url = url
         self.graph = CompoundGraph(url)
@@ -48,6 +47,13 @@ class Schemato(object):
 
         log.info("returned from validate() : %s", ret)
         return ret
+
+    def set_loglevel(self, loglevel):
+        if hasattr(log, loglevel):
+            log.basicConfig(level=getattr(log, loglevel))
+        else:
+            log.basicConfig(level=log.ERROR)
+            log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _read_stream(self, url):
         """convenience wrapper around document reading methods"""

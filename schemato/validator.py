@@ -18,7 +18,6 @@ class SchemaValidator(object):
     def __init__(self, graph, doc_lines, url=""):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
-        self.used_namespaces = []
         self.allowed_namespaces = []
 
         if isinstance(graph, compound_graph.CompoundGraph):
@@ -34,7 +33,7 @@ class SchemaValidator(object):
         """Iterate over all triples in the graph and validate each one appropriately"""
         errorstring = "Are you calling validate from the base SchemaValidator class?"
 
-        log.info("-------------------------------------------------------------------")
+        log.info("-"*100)
         log.info("Validating against %s" % self.schema_def.__class__.__name__)
 
         if not self.schema_def:
@@ -57,6 +56,7 @@ class SchemaValidator(object):
             warning = self._check_triple((s,p,o))
             if warning:
                 result.add_error(warning)
+        log.info("checked attributes: %s" % self.checked_attributes)
         return result
 
     def _check_triple(self, (subj, pred, obj)):
@@ -69,11 +69,15 @@ class SchemaValidator(object):
         classes = []
         log.warning("Possible member %s found" % pred)
 
+        pred = self._expand_qname(pred)
+
         if self._namespace_from_uri(pred) not in self.allowed_namespaces:
             log.info("Member %s does not use an allowed namespace", pred)
             return
 
         instanceof = self._is_instance((subj, pred, obj))
+        if type(instanceof) == rt.URIRef:
+            instanceof = self._expand_qname(instanceof)
 
         # this method should differentiate between an "error" and a "warning"
         # since not all issues with an implementation worth telling
@@ -82,6 +86,9 @@ class SchemaValidator(object):
         if class_invalid:
             log.warning("Invalid class %s" % instanceof)
             return class_invalid
+        # TODO - the above sometimes fails when a single object has more than one
+        # rdfa type (eg <span property="schema:creator rnews:creator" typeof="schema:Person rnews:Person">
+        # Graph chooses the type in an arbitrary order, so it's unreliable
 
         classes = self._superclasses_for_subject(self.graph, instanceof)
         classes.append(instanceof)
@@ -147,13 +154,12 @@ class SchemaValidator(object):
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
-        # TODO - in general this is not actually an error but a warning
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             log.info("failure")
             err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         log.info("success")
 
     def _superclasses_for_subject(self, graph, typeof):
@@ -186,7 +192,7 @@ class SchemaValidator(object):
         uri = str(uri)
         parts = uri.split('#')
         if len(parts) == 1:
-            return uri.split('/')[-1]
+            return uri.split('/')[-1] or uri
         return parts[-1]
 
     def _namespace_from_uri(self, uri):
@@ -199,10 +205,15 @@ class SchemaValidator(object):
             return "%s/" % '/'.join(uri.split('/')[:-1])
         return "%s#" % '#'.join(parts[:-1])
 
-    def _find_namespaces(self, doc_lines):
-        # TODO - should be deprecated since it's based on an older paradigm
-        for ns in self.allowed_namespaces:
-            self.used_namespaces.append(ns)
+    def _expand_qname(self, qname):
+        """expand a qualified name's namespace prefix to include the resolved
+        namespace root url"""
+        if type(qname) is not rt.URIRef:
+            raise TypeError("Cannot expand qname of type %s, must be URIRef" % type(qname))
+        for ns in self.graph.namespaces():
+            if ns[0] == qname.split(':')[0]:
+                return rt.URIRef("%s%s" % (ns[1], qname.split(':')[-1]))
+        return qname
 
 
 class RdfValidator(SchemaValidator):
@@ -214,8 +225,9 @@ class RdfValidator(SchemaValidator):
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = self._field_name_from_uri(cl)
-            return _error("{0} - invalid class", self._field_name_from_uri(cl),
+            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 
 
 class MicrodataValidator(SchemaValidator):
@@ -227,6 +239,7 @@ class MicrodataValidator(SchemaValidator):
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = str(cl)
-            return _error("{0} - invalid class", self._field_name_from_uri(cl),
+            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
                 search_string=search_string, doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 

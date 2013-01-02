@@ -3,3 +3,4 @@
 .*.un~
 schemato_config.py
 nohup.out
+*.smt

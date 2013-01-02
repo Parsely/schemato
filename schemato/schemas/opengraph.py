@@ -10,6 +10,8 @@ class OpenGraphSchemaDef(RdfSchemaDef):
         super(OpenGraphSchemaDef, self).__init__()
         self.source = url
         self._ontology_file = "http://ogp.me/ns/ogp.me.ttl"
+        # representation is the filename of the cached local schema
+        self._representation = "og_schemadef"
         self.parse_ontology()
 
     def parse_ontology(self):
@@ -28,7 +30,6 @@ class OpenGraphValidator(RdfValidator):
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)
         self.allowed_namespaces = ["http://ogp.me/ns#", "http://opengraphprotocol.org/schema/"]
-        self._find_namespaces(doc_lines)
 
     def _is_instance(self, (subj, pred, obj)):
         """helper, returns the class type of subj"""

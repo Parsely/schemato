@@ -1,0 +1,31 @@
+Schemato journal
+jan 2, 2013
+
+Today is a day off, but I decided to be productive and work on schemato anyway
+
+I noticed that semanticweb.org, who recently implemented rnews in rdfa, was
+causing failed validations: the rnews predicates were not being recognized by
+the validator class. I noticed that opengraph predicate qnames (like og:title)
+were apparently automatically expanded to their absolute counterparts (like
+http://ogp.me#title or whatever)
+
+For whatever reason internal to pyrdfa, this automatic expansion wasn't
+happening for rnews qnames. This is possibly becuase unlike og, rnews is not
+a namespace that is added to new Graphs by default.
+
+So i wrote the expand_qname function to perform this expansion when it doesn't
+happen by default. Having an expanded name allows the class and predicate
+validations to proceed properly.
+
+However, I noticed another problem: semanticweb.org uses the rdfa
+implemenations of both rnews and schema.org (for example,
+<span property="schema:creator rnews:creator" typeof="schema:Person rnews:Person">
+note the multiple types)
+
+It seems that internally, the pyrdfa graph is arbitrarily choosing which of
+these two types (schema:Person and rnews:Person) it should attribute to the object
+that is the "creator" of the piece. As a result, sometimes the rnews
+validation succeeds, and other times it fails due to its ontology not
+containing any info on the "schema" namespace.
+
+I need to look further into this arbitration.

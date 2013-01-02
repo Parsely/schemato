@@ -76,7 +76,8 @@ class SchemaValidator(object):
             return
 
         instanceof = self._is_instance((subj, pred, obj))
-        instanceof = self._expand_qname(instanceof)
+        if type(instanceof) == rt.URIRef:
+            instanceof = self._expand_qname(instanceof)
 
         # this method should differentiate between an "error" and a "warning"
         # since not all issues with an implementation worth telling
@@ -152,13 +153,12 @@ class SchemaValidator(object):
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
-        # TODO - in general this is not actually an error but a warning
         log.info("Validating duplication of member %s" % pred)
         if (subj,pred) in self.checked_attributes:
             log.info("failure")
             err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
                 self._field_name_from_uri(cl), doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         log.info("success")
 
     def _superclasses_for_subject(self, graph, typeof):

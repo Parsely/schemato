@@ -185,7 +185,7 @@ class SchemaValidator(object):
         uri = str(uri)
         parts = uri.split('#')
         if len(parts) == 1:
-            return uri.split('/')[-1]
+            return uri.split('/')[-1] or uri
         return parts[-1]
 
     def _namespace_from_uri(self, uri):

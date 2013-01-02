@@ -18,7 +18,6 @@ class SchemaValidator(object):
     def __init__(self, graph, doc_lines, url=""):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
-        self.used_namespaces = []
         self.allowed_namespaces = []
 
         if isinstance(graph, compound_graph.CompoundGraph):
@@ -86,7 +85,7 @@ class SchemaValidator(object):
         if class_invalid:
             log.warning("Invalid class %s" % instanceof)
             return class_invalid
-        # the above sometimes fails when a single object has more than one
+        # TODO - the above sometimes fails when a single object has more than one
         # rdfa type (eg <span property="schema:creator rnews:creator" typeof="schema:Person rnews:Person">
         # Graph chooses the type in an arbitrary order, so it's unreliable
 
@@ -214,11 +213,6 @@ class SchemaValidator(object):
             if ns[0] == qname.split(':')[0]:
                 return rt.URIRef("%s%s" % (ns[1], qname.split(':')[-1]))
         return qname
-
-    def _find_namespaces(self, doc_lines):
-        # TODO - should be deprecated since it's based on an older paradigm
-        for ns in self.allowed_namespaces:
-            self.used_namespaces.append(ns)
 
 
 class RdfValidator(SchemaValidator):

@@ -28,7 +28,6 @@ class OpenGraphValidator(RdfValidator):
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)
         self.allowed_namespaces = ["http://ogp.me/ns#", "http://opengraphprotocol.org/schema/"]
-        self._find_namespaces(doc_lines)
 
     def _is_instance(self, (subj, pred, obj)):
         """helper, returns the class type of subj"""

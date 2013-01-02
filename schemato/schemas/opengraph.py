@@ -10,6 +10,8 @@ class OpenGraphSchemaDef(RdfSchemaDef):
         super(OpenGraphSchemaDef, self).__init__()
         self.source = url
         self._ontology_file = "http://ogp.me/ns/ogp.me.ttl"
+        # representation is the filename of the cached local schema
+        self._representation = "og_schemadef"
         self.parse_ontology()
 
     def parse_ontology(self):

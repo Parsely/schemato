@@ -29,3 +29,10 @@ validation succeeds, and other times it fails due to its ontology not
 containing any info on the "schema" namespace.
 
 I need to look further into this arbitration.
+
+----------------------------------------------------
+
+Implemented schema caching on the server-side
+The schema definition file is read from a local file
+it is only pulled from the web if this local file is old or missing
+This speeds up the average validation quite a bit

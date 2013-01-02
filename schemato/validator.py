@@ -43,7 +43,7 @@ class SchemaValidator(object):
 
         log.info("in validator.validate: %s" % self.graph)
 
-        # TODO - this should choose the actually used namespace, not just
+        # TODO - this should maybe choose the actually used namespace, not just
         # the first one in the list
         result = ValidationResult(self.allowed_namespaces[0])
 
@@ -137,8 +137,6 @@ class SchemaValidator(object):
                 log.info("success")
                 return None
             elif self._namespace_from_uri(member) in self.allowed_namespaces:
-                # TODO - return a warning here - the member's namespace is not found in the
-                # official standard, but is included in allowed_namespaces
                 log.info("warning - unofficially allowed namespace")
                 err = _error("Unoficially allowed namespace {0}",
                     self._namespace_from_uri(member), doc_lines=self.doc_lines)
@@ -164,7 +162,8 @@ class SchemaValidator(object):
 
     def _superclasses_for_subject(self, graph, typeof):
         """helper, returns a list of all superclasses of a given class"""
-        # TODO - this replaces a fairly simple graph API query where it doesn't need to
+        # TODO - this might be replacing a fairly simple graph API query where
+        # it doesn't need to
         classes = []
         superclass = typeof
         while True:
@@ -180,11 +179,15 @@ class SchemaValidator(object):
 
     def _is_instance(self, (subj, pred, obj)):
         """helper, returns the class type of subj"""
-        # TODO - using the graph API could help avoid iterating over every item here
-        for s,p,o in self.graph:
-            if s == subj and str(p) == self.schema_def.lexicon['type']:
-                return o
-        return None
+        input_pred_ns = self._namespace_from_uri(self._expand_qname(pred))
+        triples = self.graph.triples(
+            (subj, rt.URIRef(self.schema_def.lexicon['type']), None)
+        )
+        if triples:
+            for tr in triples:
+                triple_obj_ns = self._namespace_from_uri(self._expand_qname(tr[2]))
+                if input_pred_ns == triple_obj_ns:  # match namespaces
+                    return tr[2]  # return the object
 
     def _field_name_from_uri(self, uri):
         """helper, returns the name of an attribute (without namespace prefix)"""

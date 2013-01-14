@@ -40,6 +40,7 @@ class SchemaDef(object):
         log.info("Attempting to read local schema file")
         try:
             if time.time() - os.stat(cache_filename).st_mtime > settings.CACHE_EXPIRY:
+                log.warning("Cache expired, re-pulling")
                 self._pull_schema_definition(cache_filename)
         except OSError:
             log.warning("Local schema not found. Pulling from web.")

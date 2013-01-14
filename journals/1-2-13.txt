@@ -3,7 +3,7 @@ jan 2, 2013
 
 Today is a day off, but I decided to be productive and work on schemato anyway
 
-I noticed that semanticweb.org, who recently implemented rnews in rdfa, was
+I noticed that semanticweb.com, who recently implemented rnews in rdfa, was
 causing failed validations: the rnews predicates were not being recognized by
 the validator class. I noticed that opengraph predicate qnames (like og:title)
 were apparently automatically expanded to their absolute counterparts (like

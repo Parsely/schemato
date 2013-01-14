@@ -6,7 +6,6 @@ from collections import defaultdict
 import rdflib
 
 from compound_graph import CompoundGraph
-from auxparsers import ParselyPageParser
 
 import settings
 
@@ -28,24 +27,20 @@ class Schemato(object):
                 m = getattr(m, n)
             return m
 
+        # TODO - add a dublin core validator
         for module_string in settings.VALIDATOR_MODULES:
             v_package = import_module('.'.join(module_string.split('.')[:-1]))
             v_instance = getattr(v_package, module_string.split('.')[-1])(self.graph, self.doc_lines, url=self.url)
             self.validators.append(v_instance)
 
-        # TODO - add a dublin core validator
-        self.parsely_page = ParselyPageParser().parse(text, doc_lines)
 
     def validate(self):
         results = []
 
         for v in self.validators:
-            if v.graph:
-                log.warning("%s validation:" % (v.__class__.__name__))
-                result = v.validate()
-                results.append(result)
-            else:
-                log.warning("no graph for %s" % v.__class__.__name__)
+            log.warning("%s validation:" % (v.__class__.__name__))
+            result = v.validate()
+            results.append(result)
 
         log.info("returned from validate() : %s", results)
         for res in results:

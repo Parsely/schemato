@@ -2,7 +2,8 @@ VALIDATOR_MODULES = [
     "schemas.rnews.RNewsValidator",
     "schemas.opengraph.OpenGraphValidator",
     "schemas.schemaorg.SchemaOrgValidator",
-    "schemas.schemaorg_rdf.SchemaOrgRDFaValidator"
+    "schemas.schemaorg_rdf.SchemaOrgRDFaValidator",
+    "schemas.parselypage.ParselyPageValidator",
 ]
 
 # root of schema cache

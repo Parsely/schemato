@@ -5,30 +5,31 @@ import sys
 import re
 from collections import defaultdict
 import json
-
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-os.sys.path.insert(0,parentdir)
-
 from schemato import Schemato
 
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+stc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+os.sys.path.append(parentdir)
+
 def create_app():
-    return Flask("schemato")
+    return Flask("schemato", template_folder=tmpl_dir, static_folder=stc_dir)
 
 app = create_app()
 
 try:
     conf_path = '/'.join(os.path.realpath(__file__).split('/')[:-1])
-    with open('%s/schemato_config.py' % conf_path) as f: pass
-    app.config.from_pyfile('schemato_config.py')
+    #with open('%s/schemato_config.py' % conf_path) as f: pass
+    app.config.from_pyfile("%s/schemato_config.py" % conf_path)
 except IOError as e:
     raise IOError("No configuration file found. Did you remember to rename example.schemato_config.py to schemato_config.py?")
 celery = Celery(app)
 
 @celery.task(name="schemato.validate_task")
 def validate_task(url):
-    v = Validator()
+    sc = Schemato(url)
     try:
-        res = v.validate(url)
+        res = sc.validate()
     except Exception, e:
         print e
         res = {'msg': e.message}

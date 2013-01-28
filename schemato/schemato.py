@@ -10,6 +10,8 @@ from compound_graph import CompoundGraph
 
 import settings
 
+# include the parent directory in the path, to allow relative imports of
+# modules from settings
 os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 

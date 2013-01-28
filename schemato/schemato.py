@@ -2,12 +2,15 @@ import urllib
 import logging as log
 import re
 from collections import defaultdict
+import os
 
 import rdflib
 
 from compound_graph import CompoundGraph
 
 import settings
+
+os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Schemato(object):

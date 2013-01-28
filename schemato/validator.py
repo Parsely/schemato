@@ -19,12 +19,7 @@ class SchemaValidator(object):
         super(SchemaValidator, self).__init__()
         self.schema_def = None
         self.allowed_namespaces = []
-
-        if isinstance(graph, compound_graph.CompoundGraph):
-            self.graph = graph
-        else:
-            log.error("Validatable graph must be of type CompoundGraph")
-            return
+        self.graph = graph
 
         log.info("init validator: %s" % self.graph)
         self.doc_lines = doc_lines

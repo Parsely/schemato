@@ -37,6 +37,10 @@ function appendResult(result){
             $("#result").append(warn);
         }
     });
+
+    if($("#result").is(":empty")){
+        $("#result").append("No errors found!");
+    }
 }
 
 function storeResults(data){

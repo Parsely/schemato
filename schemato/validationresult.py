@@ -18,6 +18,10 @@ class ValidationResult(object):
             self.errors.append(warning)
 
     def to_json(self):
+        mapping = self.to_dict()
+        return json.dumps(mapping)
+
+    def to_dict(self):
         mapping = {}
         mapping['warnings'] = []
         for warning in self.warnings:
@@ -26,7 +30,7 @@ class ValidationResult(object):
         for error in self.errors:
             mapping['errors'].append(error.to_dict())
         mapping['namespace'] = self.namespace
-        return json.dumps(mapping)
+        return mapping
 
 
 class ValidationWarning(object):

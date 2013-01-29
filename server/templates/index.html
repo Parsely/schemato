@@ -62,6 +62,7 @@
                 if(response.status == 'WORKING'){
                     $("#working").html("<p style='text-align: center;'>Validating...<br /><img src='static/img/loading.gif' /></p>");
                 } else {
+                    console.log(response);
                     clearInterval(intval);
                     storeResults(response.data);
                 }

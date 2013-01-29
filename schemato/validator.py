@@ -56,7 +56,6 @@ class SchemaValidator(object):
 
     def _check_triple(self, (subj, pred, obj)):
         """compare triple to ontology, return error or None"""
-        # don't bother with special 'type' triples
         if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
             log.info("ignoring triple with predicate '%s'" % self._field_name_from_uri(pred))
             return
@@ -74,9 +73,6 @@ class SchemaValidator(object):
         if type(instanceof) == rt.URIRef:
             instanceof = self._expand_qname(instanceof)
 
-        # this method should differentiate between an "error" and a "warning"
-        # since not all issues with an implementation worth telling
-        # the user about are actual "errors", just things to keep in mind
         class_invalid = self._validate_class(instanceof)
         if class_invalid:
             log.warning("Invalid class %s" % instanceof)
@@ -84,11 +80,11 @@ class SchemaValidator(object):
         # TODO - the above sometimes fails when a single object has more than one
         # rdfa type (eg <span property="schema:creator rnews:creator" typeof="schema:Person rnews:Person">
         # Graph chooses the type in an arbitrary order, so it's unreliable
+        # eg: http://semanticweb.com/the-impact-of-rdfa_b35003
 
         classes = self._superclasses_for_subject(self.graph, instanceof)
         classes.append(instanceof)
 
-        # is this attribute a valid member of the class or superclasses?
         member_invalid = self._validate_member(pred, classes, instanceof)
         if member_invalid:
             log.warning("Invalid member of class")

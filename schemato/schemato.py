@@ -38,7 +38,6 @@ class Schemato(object):
             v_instance = getattr(v_package, module_string.split('.')[-1])(self.graph, self.doc_lines, url=self.url)
             self.validators.append(v_instance)
 
-
     def validate(self):
         results = []
 

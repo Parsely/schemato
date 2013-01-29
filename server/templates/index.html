@@ -1,7 +1,6 @@
 <! DOCTYPE HTML PUBLIC>
 <html>
 <head>
-    <!-- im in ur source, testin ur fabfilez -->
     <title>Mr. Schemato</title>
     <link rel="stylesheet" href="static/bootstrap/css/bootstrap.css"/>
     <link rel="stylesheet" href="static/css/style.css"/>
@@ -10,80 +9,7 @@
     <script type="text/javascript" src="http://use.typekit.com/bqi7maz.js"></script>
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
-    <script type="text/javascript">
-        var status_string;
-        var status_url;
-        var url, ontology, errors, ont_name, msg;
-        var didFinishValidating = true;
-        var intval;
-
-        function appendResults(){
-            if(url != undefined)
-                $("#result").append("<p><a href='" + url + "'>" + url + "</a></p>");
-            $("#result").append("<p>" + msg + "</p>");
-
-            if(ontology != undefined){
-                for(var i = 0; i < ontology.length; i++){
-                    $("#result").append("<p>Detected standard: <a href='" + ontology[i] + "'>" + ont_name[i] + "</a></p>");
-                }
-            }
-
-            if(errors != undefined){
-                $.each(errors, function(key, value){
-                    var line, num, err;
-                    $.each(value, function(k, v){
-                        if(k == "num") num = v;
-                        else if(k == "line") line = v;
-                        else if(k == "err") err = v;
-                    });
-                    var error_div = $("<div class='error'></div>").appendTo("#result");
-                    error_div.append("<p><strong>Line " + num + "</strong>: <code>" + line + "</code></p>");
-                    error_div.append("<code>" + err.split(' - ')[0] + "</code> - <b>" + err.split(' - ')[1] + "</b>");
-                });
-            }
-        }
-
-        function storeResults(data){
-            url = ontology = errors = ont_name = msg = undefined;
-            didFinishValidating = true;
-            $("#working").empty();
-            $.each(data, function(key, value){
-                if(key == "errors") errors = value;
-                else if(key == "url") url = value;
-                else if(key == "ontology") ontology = value;
-                else if(key == "ont_name") ont_name = value;
-                else if(key == "msg") msg = value;
-            });
-            appendResults();
-        }
-
-        function getStatus(){
-            $.getJSON(status_url, function(response){
-                if(response.status == 'WORKING'){
-                    $("#working").html("<p style='text-align: center;'>Validating...<br /><img src='static/img/loading.gif' /></p>");
-                } else {
-                    console.log(response);
-                    clearInterval(intval);
-                    storeResults(response.data);
-                }
-            });
-        }
-
-        function postData(){
-            $("#linkform").submit(function(e){
-                e.preventDefault();
-                $("#result").empty();
-                if(didFinishValidating){
-                    $.post("/validate", $("#linkform").serialize(),
-                    function(data){
-                        status_url = data.url;
-                    }, "json");
-                    didFinishValidating = false;
-                }
-            });
-            intval = setInterval('getStatus()', 500);
-        }
-    </script>
+    <script type="text/javascript" src="static/js/v_display.js"></script>
 </head>
 <body>
     <div id="mainwrap" class="container">

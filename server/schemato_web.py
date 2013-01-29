@@ -33,6 +33,7 @@ def validate_task(url):
     except Exception, e:
         print e
         res = {'msg': e.message}
+    print res
     return [r.to_dict() for r in res]
 
 

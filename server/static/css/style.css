@@ -18,11 +18,19 @@ footer {
     padding: 2px 15px 15px 15px;
 }
 
-.error {
+.error, .warning{
     border: 1px solid #777;
     margin-top: 4px;
     margin-bottom: 2px;
     padding: 0px 4px 7px 4px;
+}
+
+.error {
+    background-color: #FFA8A8;
+}
+
+.warning {
+    background-color: #FFFF80;
 }
 
 label {

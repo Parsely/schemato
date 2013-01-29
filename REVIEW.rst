@@ -7,10 +7,10 @@ Project-level
 Name
 ~~~~
 
-~~We should simplify the name. Let's just use the project name "schemato".  Same
+We should simplify the name. Let's just use the project name "schemato".  Same
 for Github name. We can refer to it as "Mr. Schemato" in the documentation to
 be cute. But the project name (on PyPi, Github, in import statements) should be
-simply "schemato".~~
+simply "schemato".
 
 OOP approach isn't quite right
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

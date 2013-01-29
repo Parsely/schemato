@@ -17,28 +17,26 @@ function buildError(data, classname){
 function appendResult(result){
     if(result.warnings.length > 0 || result.errors.length > 0){
         $('#result').append($("<p />").text(result.namespace));
-
-        var canonical_errors = [];
-        $.each(result.errors, function(key, value){
-            console.log(value);
-            if(canonical_errors.indexOf(value.string) == -1){
-                canonical_errors.push(value.string);
-                var error = buildError(value, "error");
-                $("#result").append(error);
-            }
-        });
-
-        var canonical_warnings = [];
-        $.each(result.warnings, function(key, value){
-            if(canonical_warnings.indexOf(value.string) == -1){
-                canonical_warnings.push(value.string);
-                var warn = buildError(value, "warning");
-                $("#result").append(warn);
-            }
-        });
-    } else {
-        $("#result").append("No errors found!");
     }
+
+    var canonical_errors = [];
+    $.each(result.errors, function(key, value){
+        console.log(value);
+        if(canonical_errors.indexOf(value.string) == -1){
+            canonical_errors.push(value.string);
+            var error = buildError(value, "error");
+            $("#result").append(error);
+        }
+    });
+
+    var canonical_warnings = [];
+    $.each(result.warnings, function(key, value){
+        if(canonical_warnings.indexOf(value.string) == -1){
+            canonical_warnings.push(value.string);
+            var warn = buildError(value, "warning");
+            $("#result").append(warn);
+        }
+    });
 }
 
 function storeResults(data){
@@ -48,6 +46,9 @@ function storeResults(data){
     $.each(data, function(key, value){
         appendResult(value);
     });
+    if($("#result").is(":empty")){
+        $("#result").append("No errors found!");
+    }
 }
 
 function getStatus(){

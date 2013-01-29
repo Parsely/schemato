@@ -6,7 +6,7 @@ var intval;
 function buildError(data, classname){
     var error = $("<div />").addClass(classname);
     var line = $("<p />").addClass("line-no");
-    line.append("Line " + data.num + ":");
+    line.append("Line " + data.num + ": ");
     line.append($("<code />").append(data.line))
     var msg = $("<p />").append(data.string);
     error.append(line);

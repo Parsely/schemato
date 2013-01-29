@@ -43,7 +43,7 @@ def _reload_service(service):
 def deploy():
     with hide('running', 'stdout'):
         path = local('git rev-parse --show-toplevel',capture=True)
-        puts("Deploying mrSchemato to %s" % env.host)
+        puts("Deploying schemato to %s" % env.host)
         _deploy_repo(path)
         _reload_service("celery")
         _reload_service("mrschemato")

@@ -33,6 +33,10 @@ footer {
     background-color: #FFFF80;
 }
 
+.line-no{
+    font-weight: bold;
+}
+
 label {
     margin-top: 15px;
     font-size: 15pt;

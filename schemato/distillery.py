@@ -1,12 +1,14 @@
 from distillers import Distill, Distiller
 
 class NewsDistiller(Distiller):
+    site = Distill("og:site_name")
     title = Distill("s:headline", "og:title")
     image_url = Distill("s:associatedMedia.ImageObject/url", "og:image")
     pub_date = Distill("s:datePublished")
-    author = Distill("s:creator.Person/name")
+    author = Distill("s:creator.Person/name", "s:author")
     section = Distill("s:articleSection")
-    link = Distill("og:url")
+    description = Distill("s:description", "og:description")
+    link = Distill("s:url", "og:url")
     id = Distill("s:identifier")
 
 class ParselyDistiller(Distiller):

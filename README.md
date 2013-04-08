@@ -1,7 +1,7 @@
 schemato
 ========
 
-Meet Mr. Schemato, the friendly semantic web validator and distiller that is
+Meet schemato, the friendly semantic web validator and distiller that is
 making metadata cool again.
 
 To contribute or report bugs, contact emmett@parsely.com. You can also report
@@ -17,10 +17,7 @@ validator class to plug into this functionality.
 
 To see the validator in action:
 
-    $ git clone https://github.com/Parsely/schemato.git
-    $ cd schemato
-    $ pip install -r requirements.txt
-    $ cd schemato
+    $ pip install schemato
     $ ipython
     >>> from schemato import Schemato
     >>> sc = Schemato("../test_documents/rdf.html", loglevel="INFO")

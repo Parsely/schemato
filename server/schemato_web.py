@@ -5,12 +5,13 @@ import sys
 import re
 from collections import defaultdict
 import json
-from schemato import Schemato
 
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 stc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
 os.sys.path.append(parentdir)
+
+from schemato import Schemato
 
 def create_app():
     return Flask("schemato", template_folder=tmpl_dir, static_folder=stc_dir)

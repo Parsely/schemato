@@ -1,12 +1,6 @@
 schemato
 ========
 
-Meet schemato, the friendly semantic web validator and distiller that is
-making metadata cool again.
-
-To contribute or report bugs, contact emmett@parsely.com. You can also report
-Github issues if you prefer.
-
 Validator
 ---------
 

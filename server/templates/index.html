@@ -3,6 +3,7 @@
 <head>
     <title>schema.to</title>
     <link rel="stylesheet" href="static/bootstrap/css/bootstrap.css"/>
+    <link href="static/css/prettify.css" type="text/css" rel="stylesheet" />
     <link rel="stylesheet" href="static/css/style.css"/>
 
     <script src="js/bootstrap.min.js"></script>
@@ -10,10 +11,11 @@
     <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="static/js/v_display.js"></script>
+    <script type="text/javascript" src="static/js/prettify.js"></script>
 </head>
-<body>
+<body onload="prettyPrint()">
     <div id="mainwrap" class="container">
-        <a href="https://github.com/Parsely/schemato"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+        <a href="https://github.com/Parsely/schemato"><img style="position: fixed; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
         <div class="hero-unit">
             <img class="logo" src="static/img/schemato.png" />
             <h1>schema.to</h1>
@@ -37,7 +39,7 @@
         <hr>
         <div class="row">
             <div class="span12">
-                schemato provides comprehensive validation of the rNews, Schema.org, Facebook openGraph, and parsely-page metadata standards. Paste a URL below to see how any site's implementation stacks up.
+                schemato provides comprehensive validation of the rNews, Schema.org, Facebook openGraph, and parsely-page metadata standards. It's also extensible, so you can write your own validator module. Paste a URL below to see how any site's implementation stacks up.
             </div>
         </div>
         <form id="linkform">
@@ -62,6 +64,29 @@
                 schema.to is written and maintained by Emmett Butler and powered by W3C's semantic web tools for Python, written by Ivan Herman - specifically <a href="https://github.com/RDFLib/Pymicrodata">pyMicrodata</a> and <a href="https://github.com/RDFLib/PyRDFa">pyRdfa</a>. If you'd like to contribute to the project, <a href="http://github.com/Parsely/schemato">fork it on github</a>, email hello@parsely.com.
             </div>
         </div>
+        <hr>
+        <div class="row">
+            <div class="span12">
+                It's easy to extend schemato to support additional standards. Take a look at schemato's minimal amount of rnews-specific code:
+            </div>
+        </div>
+        <pre class="prettyprint linenums languague-css">
+from validator import RdfValidator
+from schemadef import RdfSchemaDef
+
+class RNewsValidator(RdfValidator):
+    def __init__(self, graph, doc_lines, url=""):
+        super(RNewsValidator, self).__init__(graph, doc_lines, url=url)
+        self.schema_def = RNewsSchemaDef()
+        self.allowed_namespaces = ["http://iptc.org/std/rNews/2011-10-07#"]
+
+class RNewsSchemaDef(RdfSchemaDef):
+    def __init__(self):
+        super(RNewsSchemaDef, self).__init__()
+        self._ontology_file = "http://dev.iptc.org/files/rNews/rnews_1.0_draft3_rdfxml.owl"
+        self._representation = "rnews_schemadef"
+        self.parse_ontology()
+        </pre>
         <hr>
         <footer>
             <p><a href="http://emmettbutler.com">Emmett Butler</a>, <a href="http://parse.ly">Parse.ly, Inc.</a> 2012</p>

@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, render_template, request
 from flask_celery import Celery
+from flask.ext.script import Manager
 import os
 import sys
 import re
@@ -17,6 +18,7 @@ def create_app():
     return Flask("schemato", template_folder=tmpl_dir, static_folder=stc_dir)
 
 app = create_app()
+manager = Manager(app)
 
 try:
     conf_path = '/'.join(os.path.realpath(__file__).split('/')[:-1])
@@ -72,4 +74,5 @@ def status(task_id):
 if __name__ == "__main__":
     print "To start celery, open another terminal in this directory and run"
     print "python manage.py celeryd -l info -E"
-    app.run()
+    app.debug = True
+    manager.run()

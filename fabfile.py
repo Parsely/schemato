@@ -1,50 +1,47 @@
 from fabric.api import *
-from fabric.decorators import *
-from fabric.colors import green, red
-from fabric.context_managers import hide
+from fabric.contrib.project import rsync_project
 
+VIRTUALENV_NAME = "schemato"
+APP_NAME = VIRTUALENV_NAME
+FLASK_SCRIPT = "server/schemato_web.py"
+DATA_PATH = "/data/apps/cogtree"
+APP_PATH = "{}/{}".format(DATA_PATH, APP_NAME)
+VIRTUALENV_PATH = "/data/virtualenvs"
 
-env.remote_dir = "/data/apps/cogtree"
-env.temp_folder = "/tmp"
-env.archive_name = "schema.tar"
-env.project_name = "mrschemato"
-env.hosts = ['hack.cogtree.com']
-env.user = 'cogtree'
+env.use_ssh_config = True
+env.hosts = ["cogtree@hack.cogtree.com"]
 
-def _deploy_repo(path):
-    sudo('mkdir -m 777 -p %s' % env.remote_dir)
-    tmp_archive = "%s/%s" % (env.temp_folder, env.archive_name)
+def virtualenv_run(cmd):
+    run("source {}/{}/bin/activate && {}".format(VIRTUALENV_PATH, VIRTUALENV_NAME, cmd))
 
-    puts("Archiving repository")
-    with lcd(path):
-        local('git archive --prefix=%s/ -o %s HEAD' % (env.project_name,env.archive_name))
-        local('mv %s /tmp/' % env.archive_name)
-        puts("Moving local archive to %s" % env.remote_dir)
-        put(tmp_archive, env.remote_dir)
-    puts("Unpacking archive on server")
-    with cd(env.remote_dir):
-        run('tar xvf %s' % env.archive_name)
-        run('rm %s' % env.archive_name)
-    with cd(path):
-        local('rm %s' % tmp_archive)
-    puts(green("Success"))
-    return
+@task
+def setup_virtualenv():
+    """Set up virtualenv on remote machine."""
+    run("mkdir -p {}".format(VIRTUALENV_PATH))
+    with cd(APP_PATH):
+        run("virtualenv {}/{}".format(VIRTUALENV_PATH, VIRTUALENV_NAME))
+        virtualenv_run("pip install -r requirements.txt")
 
-def _reload_service(service):
-    puts("Reloading %s" % service)
-    run("sudo supervisorctl restart %s" % service)
-    running = run("ps aux | grep -i %s | grep -i python | wc -l" % service)
-    if running == "0":
-        puts(red("reloading %s failed" % service))
-    else:
-        puts(green("Success"))
+@task
+def run_devserver():
+    """Run the dev Flask server on remote machine."""
+    with cd(APP_PATH):
+        virtualenv_run("python {} runserver --host=0.0.0.0 --port=8001".format(FLASK_SCRIPT))
 
 @task
 def deploy():
-    with hide('running', 'stdout'):
-        path = local('git rev-parse --show-toplevel',capture=True)
-        puts("Deploying schemato to %s" % env.host)
-        _deploy_repo(path)
-        _reload_service("celery")
-        _reload_service("mrschemato")
-        puts(green("Deployment succeeded."))
+    """Deploy project remotely."""
+    run("mkdir -p {}".format(APP_PATH))
+    rsync_project(remote_dir=APP_PATH,
+                  local_dir="./",
+                  exclude=("*.pyc", ".git"))
+
+def supervisor_run(cmd):
+    sudo("supervisorctl {}".format(cmd), shell=False)
+
+@task
+def restart():
+    """Restart supervisor service."""
+    supervisor_run("restart {}".format(APP_NAME))
+    run("sleep 1")
+    supervisor_run("tail -800 {}".format(APP_NAME))

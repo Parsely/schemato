@@ -7,6 +7,8 @@ import re
 from collections import defaultdict
 import json
 
+import schemato_config
+
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 stc_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
@@ -19,13 +21,7 @@ def create_app():
 
 app = create_app()
 manager = Manager(app)
-
-try:
-    conf_path = '/'.join(os.path.realpath(__file__).split('/')[:-1])
-    #with open('%s/schemato_config.py' % conf_path) as f: pass
-    app.config.from_pyfile("%s/schemato_config.py" % conf_path)
-except IOError as e:
-    raise IOError("No configuration file found. Did you remember to rename example.schemato_config.py to schemato_config.py?")
+app.config.from_object(schemato_config)
 celery = Celery(app)
 
 @celery.task(name="schemato.validate_task")

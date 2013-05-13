@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, render_template, request
-from flask_celery import Celery
+from celery import Celery
 from flask.ext.script import Manager
 import os
 import sys
@@ -22,7 +22,9 @@ def create_app():
 app = create_app()
 manager = Manager(app)
 app.config.from_object(schemato_config)
+
 celery = Celery(app)
+celery.config_from_object(schemato_config)
 
 @celery.task(name="schemato.validate_task")
 def validate_task(url):

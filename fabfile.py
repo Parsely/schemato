@@ -9,7 +9,7 @@ APP_PATH = "{}/{}".format(DATA_PATH, APP_NAME)
 VIRTUALENV_PATH = "/data/virtualenvs"
 
 env.use_ssh_config = True
-env.hosts = ["cogtree@hack.cogtree.com"]
+env.hosts = ["cogtree@ue1a-hack.cogtree.com"]
 
 def virtualenv_run(cmd):
     run("source {}/{}/bin/activate && {}".format(VIRTUALENV_PATH, VIRTUALENV_NAME, cmd))

@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 reqs = ['rdflib',
         'lepl',
@@ -22,5 +22,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    requires=reqs
+    install_requires=reqs
 )

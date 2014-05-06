@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 with open('README.md', 'r') as f:
     long_description = f.read()
@@ -10,25 +10,21 @@ reqs = ['rdflib',
         ]
 
 setup(
-    name = "schemato",
-    version = "1.0",
-    author = 'Emmet Butler',
-    author_email = 'emmett@parsely.com',
-    packages=find_packages(exclude=['ez_setup']),
+    name="schemato",
+    version="1.0",
+    author='Emmett Butler',
+    author_email='emmett@parsely.com',
     url='https://github.com/Parsely/schemato',
-    keywords='solr solrcloud',
-    description='python library for interacting with SolrCloud ',
+    keywords='microdata rdf metadata',
+    description='Unified semantic metadata validator',
     long_description=long_description,
     include_package_data=True,
     platforms='any',
-    classifiers = [
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        ],
-
-    install_requires = reqs,
-
-        )
+    ],
+    install_requires=reqs,
+)

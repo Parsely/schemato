@@ -1,0 +1,11 @@
+*.pyc
+.*.swp
+.*.un~
+schemato_config.py
+nohup.out
+*.smt
+REVIEW.rst
+MANIFEST
+dist/
+build/
+*.egg-info

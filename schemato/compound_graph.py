@@ -1,7 +1,6 @@
-from pyMicrodata import pyMicrodata
-from pyRdfa import pyRdfa
+from rdflib.plugins.parsers.pyMicrodata import microdata
+from rdflib.plugins.parsers.pyRdfa import pyRdfa
 import rdflib
-
 
 class CompoundGraph(object):
     def __init__(self, source):

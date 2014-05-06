@@ -16,6 +16,7 @@ setup(
     author_email='emmett@parsely.com',
     url='https://github.com/Parsely/schemato',
     keywords='microdata rdf metadata',
+    packages=['schemato'],
     description='Unified semantic metadata validator',
     long_description=long_description,
     include_package_data=True,
@@ -26,5 +27,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    install_requires=reqs,
+    install_requires=reqs
 )

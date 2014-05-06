@@ -33,14 +33,14 @@ class SchemaValidator(object):
 
         if not self.schema_def:
             raise ValueError("No schema definition supplied. %s" % errorstring)
-        if not self.graph:
-            raise ValueError("No graph object found to validate!")
 
         log.info("in validator.validate: %s" % self.graph)
 
         # TODO - this should maybe choose the actually used namespace, not just
         # the first one in the list
         result = ValidationResult(self.allowed_namespaces[0])
+        if not self.graph:
+            return result
 
         self.checked_attributes = []
         for s,p,o in self.graph:

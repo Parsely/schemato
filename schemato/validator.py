@@ -2,7 +2,7 @@ import rdflib.term as rt
 import logging as log
 import sys
 
-from rdflib.plugins.parsers.pyMicrodata import microdata
+from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 
 from errors import error_line, _error

@@ -1,4 +1,4 @@
-from setuptools import setup
+from distutils.core import setup
 
 with open('README.md', 'r') as f:
     long_description = f.read()
@@ -19,7 +19,6 @@ setup(
     packages=['schemato'],
     description='Unified semantic metadata validator',
     long_description=long_description,
-    include_package_data=True,
     platforms='any',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -27,5 +26,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    install_requires=reqs
+    requires=reqs
 )

@@ -1,8 +1,0 @@
-tornado # simple app server
-Flask # web framework
-
-# pin celery support
-celery==3.0.19
-Flask-Celery==2.4.3
-
-Flask-Script # manage.py support

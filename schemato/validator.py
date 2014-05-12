@@ -1,13 +1,12 @@
 import rdflib.term as rt
 import logging as log
-import sys
 
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 
-from errors import error_line, _error
+from errors import _error
 from validationresult import ValidationResult, ValidationWarning
-import compound_graph
+
 
 class SchemaValidator(object):
     """ASSUMPTIONS:
@@ -28,7 +27,7 @@ class SchemaValidator(object):
         """Iterate over all triples in the graph and validate each one appropriately"""
         errorstring = "Are you calling validate from the base SchemaValidator class?"
 
-        log.info("-"*100)
+        log.info("-" * 100)
         log.info("Validating against %s" % self.schema_def.__class__.__name__)
 
         if not self.schema_def:
@@ -43,12 +42,12 @@ class SchemaValidator(object):
             return result
 
         self.checked_attributes = []
-        for s,p,o in self.graph:
+        for subject, predicate, object_ in self.graph:
             log.info("")
-            log.info("subj: " + s)
-            log.info("pred: " + p)
-            log.info("obj: " + o)
-            warning = self._check_triple((s,p,o))
+            log.info("subj: " + subject)
+            log.info("pred: " + predicate)
+            log.info("obj: " + object_)
+            warning = self._check_triple((subject, predicate, object_))
             if warning:
                 result.add_error(warning)
         log.info("checked attributes: %s" % self.checked_attributes)
@@ -96,7 +95,7 @@ class SchemaValidator(object):
             return dupe_invalid
 
         # collect a list of checked attributes
-        self.checked_attributes.append((subj,pred))
+        self.checked_attributes.append((subj, pred))
 
         log.warning("successfully validated triple, no errors")
 
@@ -130,24 +129,22 @@ class SchemaValidator(object):
             elif self._namespace_from_uri(member) in self.allowed_namespaces:
                 log.info("warning - unofficially allowed namespace")
                 err = _error("Unoficially allowed namespace {0}",
-                    self._namespace_from_uri(member), doc_lines=self.doc_lines)
+                             self._namespace_from_uri(member), doc_lines=self.doc_lines)
                 return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         else:
             log.info("failure")
             err = _error("{0} - invalid member of {1}",
-                self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
-                doc_lines=self.doc_lines)
+                         self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
+                         doc_lines=self.doc_lines)
             return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
-
-
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
         log.info("Validating duplication of member %s" % pred)
-        if (subj,pred) in self.checked_attributes:
+        if (subj, pred) in self.checked_attributes:
             log.info("failure")
             err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
-                self._field_name_from_uri(cl), doc_lines=self.doc_lines)
+                         self._field_name_from_uri(cl), doc_lines=self.doc_lines)
             return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         log.info("success")
 
@@ -214,13 +211,13 @@ class RdfValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
-        self.graph = self.graph.rdfa_graph # use the rdfa half of the compound graph
+        self.graph = self.graph.rdfa_graph  # use the rdfa half of the compound graph
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = self._field_name_from_uri(cl)
             err = _error("{0} - invalid class", self._field_name_from_uri(cl),
-                search_string=search_string, doc_lines=self.doc_lines)
+                         search_string=search_string, doc_lines=self.doc_lines)
             return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 
 
@@ -228,12 +225,11 @@ class MicrodataValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(MicrodataValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyMicrodata()
-        self.graph = self.graph.microdata_graph # use the microdata half of the compound
+        self.graph = self.graph.microdata_graph  # use the microdata half of the compound
 
     def _validate_class(self, cl):
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = str(cl)
             err = _error("{0} - invalid class", self._field_name_from_uri(cl),
-                search_string=search_string, doc_lines=self.doc_lines)
+                         search_string=search_string, doc_lines=self.doc_lines)
             return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
-

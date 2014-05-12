@@ -1,18 +1,12 @@
 import urllib
 import logging as log
 import re
-from collections import defaultdict
 import os
-
-import rdflib
+import cgi
 
 from compound_graph import CompoundGraph
 
 import settings
-
-# include the parent directory in the path, to allow relative imports of
-# modules from settings
-os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 class Schemato(object):
@@ -20,11 +14,13 @@ class Schemato(object):
         """init with a local filepath or a URI"""
         super(Schemato, self).__init__()
         self.set_loglevel(loglevel)
-        text, url, doc_lines = self._read_stream(source)
-        self.url = url
-        self.graph = CompoundGraph(url)
-        self.doc_lines = doc_lines
-        self.validators = []
+
+        def _read_stream(url):
+            text, url = self._get_document(url)
+            return url, self._document_lines(text)
+        self.url, self.doc_lines = _read_stream(source)
+
+        self.graph = CompoundGraph(self.url)
 
         def import_module(name):
             m = __import__(name)
@@ -32,20 +28,18 @@ class Schemato(object):
                 m = getattr(m, n)
             return m
 
-        # TODO - add a dublin core validator
-        for module_string in settings.VALIDATOR_MODULES:
-            v_package = import_module('.'.join(module_string.split('.')[:-1]))
-            v_instance = getattr(v_package, module_string.split('.')[-1])(self.graph, self.doc_lines, url=self.url)
-            self.validators.append(v_instance)
+        # include the parent directory in the path, to allow relative imports of
+        # modules from settings
+        os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+        self.validators = [getattr(
+            import_module('.'.join(module_path.split('.')[:-1])),
+            module_path.split('.')[-1])(
+            self.graph, self.doc_lines, url=self.url)
+            for module_path in settings.VALIDATOR_MODULES]
 
     def validate(self):
-        results = []
-
-        for v in self.validators:
-            log.warning("%s validation:" % (v.__class__.__name__))
-            result = v.validate()
-            results.append(result)
-
+        results = [v.validate() for v in self.validators]
         log.info("returned from validate() : %s", results)
         for res in results:
             log.info(res.to_json())
@@ -58,19 +52,12 @@ class Schemato(object):
             log.basicConfig(level=log.ERROR)
             log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
-    def _read_stream(self, url):
-        """convenience wrapper around document reading methods"""
-        text, url = self._get_document(url)
-        return text, url, self._document_lines(text)
-
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""
-        doc_lines, num = [], 0
-        for line in text.split('\n'):
-            num += 1
-            line = re.sub(r'^ +| +$', '', line)
-            line = line.replace("<", "&lt;").replace(">", "&gt;")
-            doc_lines.append((line, num))
+        inlines = text.split('\n')
+        doc_lines = [(cgi.escape(re.sub(r'^ +| +$', '', line)), num)
+                     for line, num
+                     in zip(inlines, xrange(1, len(inlines) + 1))]
         return doc_lines
 
     def _get_document(self, url):
@@ -87,6 +74,4 @@ class Schemato(object):
                 text = open(url, "r").read()
         except:
             raise IOError('Failed to read stream from %s' % url)
-
         return (text, url)
-

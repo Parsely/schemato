@@ -2,13 +2,8 @@ import rdflib.term as rt
 import logging as log
 import sys
 
-<<<<<<< HEAD
-from pyRdfa import pyRdfa
-from pyMicrodata import pyMicrodata
-=======
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
->>>>>>> setup
 
 from errors import error_line, _error
 from validationresult import ValidationResult, ValidationWarning

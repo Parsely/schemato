@@ -28,7 +28,7 @@ class SchemaDef(object):
         super(SchemaDef, self).__init__()
         self._ontology_file = ""
         self.ontology = defaultdict(list)
-        self.attributes_by_class = defaultdict(list)
+        self.attributes_by_class = {}
         self._ontology_parser_function = None
         self.lexicon = {}
 
@@ -60,11 +60,17 @@ class SchemaDef(object):
         """place the ontology graph into a set of custom data structures
         for use by the validator"""
         for subj, pred, obj in self._schema_nodes():
+            if subj not in self.attributes_by_class.keys():
+                if obj == rt.URIRef(self.lexicon['class']) and pred == rt.URIRef(self.lexicon['type']):
+                    self.attributes_by_class[subj] = []
+
             leaves = [(subj, pred, obj)]
             if type(obj) == rt.BNode:
                 leaves = deepest_node((subj, pred, obj), self.graph)
 
-            for s,p,o in leaves:
+            for s, p, o in leaves:
+                if o not in self.attributes_by_class.keys():
+                    self.attributes_by_class[o] = []
                 if pred == rt.URIRef(self.lexicon['domain']):
                     self.attributes_by_class[o].append(subj)
 
@@ -104,7 +110,8 @@ class RdfSchemaDef(SchemaDef):
             'range': "http://www.w3.org/2000/01/rdf-schema#range",
             'domain': "http://www.w3.org/2000/01/rdf-schema#domain",
             'type': "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            'class': "http://www.w3.org/2002/07/owl#Class"
         }
 
 
@@ -117,5 +124,6 @@ class MicrodataSchemaDef(SchemaDef):
             'range': "http://schema.org/rangeIncludes",
             'domain': "http://schema.org/domainIncludes",
             'type': "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf"
+            'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf",
+            'class': "http://www.w3.org/2000/01/rdf-schema#Class"
         }

@@ -115,8 +115,8 @@ class MicrodataSchemaDef(SchemaDef):
         # TODO - certainly not the best way to do this, should probably use the
         # pyRdfa/pyMicrodata graph APIs to make this more robust
         self.lexicon = {
-            'range': "http://schema.org/range",
-            'domain': "http://schema.org/domain",
+            'range': "http://schema.org/rangeIncludes",
+            'domain': "http://schema.org/domainIncludes",
             'type': "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
             'subclass': "http://www.w3.org/2000/01/rdf-schema#subClassOf"
         }

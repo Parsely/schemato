@@ -31,7 +31,6 @@ class Schemato(object):
         # include the parent directory in the path, to allow relative imports of
         # modules from settings
         os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-
         self.validators = [getattr(
             import_module('.'.join(module_path.split('.')[:-1])),
             module_path.split('.')[-1])(

@@ -1,7 +1,6 @@
 import rdflib.term as rt
 import logging as log
 
-from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 import rdflib
 import os

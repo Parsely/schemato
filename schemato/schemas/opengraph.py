@@ -1,5 +1,6 @@
-import rdflib.term as rt
+from collections import defaultdict
 import logging as log
+import rdflib.term as rt
 
 from validator import RdfValidator
 from schemadef import RdfSchemaDef
@@ -15,6 +16,7 @@ class OpenGraphSchemaDef(RdfSchemaDef):
         self.parse_ontology()
 
     def parse_ontology(self):
+        self.attributes_by_class = defaultdict(list, self.attributes_by_class)
         for subj, pred, obj in self._schema_nodes():
             leaves = [(subj, pred, obj)]
             if type(obj) == rt.BNode:

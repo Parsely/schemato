@@ -114,8 +114,8 @@ class SchemaValidator(object):
         # calculate it once at the beginning, or consider replacing
         # attributes_by_class with it somehow
         stripped_attribute_names = []
-        sublist = []
         for cl in classes:
+            sublist = []
             for attr in self.schema_def.attributes_by_class[cl]:
                 sublist.append(attr)
             for field in sublist:

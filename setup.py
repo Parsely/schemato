@@ -2,8 +2,7 @@ from setuptools import setup
 
 reqs = ['rdflib',
         'lepl',
-        'html5lib',
-        'lxml',
+        'lxml'
         ]
 
 setup(
@@ -13,7 +12,7 @@ setup(
     author_email='emmett@parsely.com',
     url='https://github.com/Parsely/schemato',
     keywords='microdata rdf metadata',
-    packages=['schemato'],
+    packages=['schemato', 'schemato.schemas'],
     description='Unified semantic metadata validator',
     platforms='any',
     classifiers=[

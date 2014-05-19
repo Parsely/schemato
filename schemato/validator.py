@@ -72,6 +72,10 @@ class SchemaValidator(object):
         if type(instanceof) == rt.URIRef:
             instanceof = self._expand_qname(instanceof)
 
+        if hasattr(self.schema_def, "attributes_by_class") and not self.schema_def.attributes_by_class:
+            log.info("Parsed ontology not found. Parsing...")
+            self.schema_def.parse_ontology()
+
         class_invalid = self._validate_class(instanceof)
         if class_invalid:
             log.warning("Invalid class %s" % instanceof)

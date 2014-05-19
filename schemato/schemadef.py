@@ -37,7 +37,7 @@ class SchemaDef(object):
         if not present or older than expiry, pull the latest version from
         the web at self._ontology_file"""
         cache_filename = os.path.join(settings.CACHE_ROOT, "%s.smt" % self._representation)
-        log.info("Attempting to read local schema file")
+        log.info("Attempting to read local schema at {}".format(cache_filename))
         try:
             if time.time() - os.stat(cache_filename).st_mtime > settings.CACHE_EXPIRY:
                 log.warning("Cache expired, re-pulling")
@@ -45,8 +45,9 @@ class SchemaDef(object):
         except OSError:
             log.warning("Local schema not found. Pulling from web.")
             self._pull_schema_definition(cache_filename)
+        else:
+            log.info("Success")
 
-        log.info("Success reading local schema")
         return cache_filename
 
     def _pull_schema_definition(self, fname):
@@ -59,6 +60,8 @@ class SchemaDef(object):
     def parse_ontology(self):
         """place the ontology graph into a set of custom data structures
         for use by the validator"""
+        start = time.clock()
+        log.info("Parsing ontology file for {}".format(self.__class__.__name__))
         for subj, pred, obj in self._schema_nodes():
             if subj not in self.attributes_by_class.keys():
                 if obj == rt.URIRef(self.lexicon['class']) and pred == rt.URIRef(self.lexicon['type']):
@@ -73,6 +76,7 @@ class SchemaDef(object):
                     self.attributes_by_class[o] = []
                 if pred == rt.URIRef(self.lexicon['domain']):
                     self.attributes_by_class[o].append(subj)
+        log.info("Ontology parsing complete in {}".format((time.clock() - start) * 1000))
 
     def _schema_nodes(self):
         """parse self._ontology_file into a graph"""

@@ -1,30 +1,38 @@
 schemato
 ========
 
-Validator
----------
-
-This is a validator for HTML-embedded metadata standards. It knows the
+**Schemato** is a validator for HTML-embedded metadata standards. It knows the
 location of the official schema definitions, and uses these documents as
 validation templates. As a contributor, you can easily subclass the base
 validator class to plug into this functionality.
 
 To see the validator in action:
 
-    $ pip install schemato
-    $ ipython
-    >>> from schemato import Schemato
-    >>> sc = Schemato("../test_documents/rdf.html", loglevel="INFO")
-    >>> sc.validate()
+    from schemato import Schemato
+    sc = Schemato("my_test.html")
+    sc.validate()
 
 The first time you run schemato, it will make requests for the latest versions
-of the official schema definitions. These files are cached locally with
-a fairly long expiry, to avoid the overhead of web requests. Schemato will
-then call the ``validate()`` method of the Validator subclasses listed in
-settings.py.
+of the official schema definitions. Schemato will then call the ``validate()``
+method of the Validator subclasses listed in settings.py.
 
-There are a few other test documents available for validation in the
+There are a few test documents available for validation in the
 test\_documents subdirectory.
+
+Download
+--------
+
+Download the source from PyPI with
+
+    pip install schemato
+
+You can also clone this repo and take a closer look at the code and test documents
+
+    git clone https://github.com/Parsely/schemato.git
+
+Then, install the library with
+
+    python setup.py install
 
 Distiller
 ---------
@@ -92,3 +100,9 @@ In this case, our strategy did not involve parsely-page, and instead used
 Schema.org and OpenGraph. Since Mashable does not implement Schema.org but does
 implement OpenGraph, it comes up with the fields it can. The ``sources`` property 
 shows which fields were populated and how they got their values.
+
+Support
+-------
+
+If you need help using Schemato, or have found a bug, please create an issue
+on the [Github repo](https://github.com/Parsely/schemato/issues?state=open).

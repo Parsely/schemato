@@ -10,7 +10,8 @@ To see the validator in action:
 
     from schemato import Schemato
     sc = Schemato("my_test.html")
-    sc.validate()
+    res = sc.validate()
+    [a.to_dict() for a in res]
 
 The first time you run schemato, it will make requests for the latest versions
 of the official schema definitions. Schemato will then call the ``validate()``

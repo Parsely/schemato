@@ -3,7 +3,7 @@ from lepl.apps.rfc3696 import HttpUrl
 
 from StringIO import StringIO
 import json
-import urllib
+import urllib2
 import sys
 import os.path
 import re
@@ -60,7 +60,11 @@ class ParselyPageValidator(SchemaValidator):
 
     def get_standard(self):
         """get list of allowed parameters"""
-        text = urllib.urlopen(PARSELY_PAGE_SCHEMA).read()
+        try:
+            res = urllib2.urlopen(PARSELY_PAGE_SCHEMA)
+        except:
+            return []
+        text = res.read()
         tree = etree.parse(StringIO(text))
         stdref = tree.xpath("//div/@about")
         return [a.split(':')[1] for a in stdref]

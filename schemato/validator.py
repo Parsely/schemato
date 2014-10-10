@@ -20,7 +20,7 @@ class SchemaValidator(object):
         self.allowed_namespaces = []
         self.graph = graph
 
-        log.info("init validator: %s" % self.graph)
+        log.info("init validator: %s" % self.__class__.__name__)
         self.doc_lines = doc_lines
 
     def validate(self):

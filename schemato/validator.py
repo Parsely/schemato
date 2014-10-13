@@ -1,3 +1,5 @@
+from functools import partial
+
 import rdflib.term as rt
 import logging as log
 
@@ -20,9 +22,12 @@ class SchemaValidator(object):
         self.allowed_namespaces = []
         self.graph = graph
         self.checked_attributes = []
+        self.stripped_attribute_names = {}
 
         log.info("init validator: %s" % self.__class__.__name__)
         self.doc_lines = doc_lines
+
+        self.err = partial(_error, doc_lines=self.doc_lines)
 
     def validate(self):
         """Iterate over all triples in the graph and validate each one appropriately"""
@@ -41,13 +46,17 @@ class SchemaValidator(object):
             log.info("\nsubj: {subj}\npred: {pred}\n obj: {obj}"
                      .format(subj=subject, pred=predicate, obj=object_.encode('utf-8')))
             result.add_error(self._check_triple((subject, predicate, object_)))
-        log.debug("checked attributes: %s" % self.checked_attributes)
         return result
+
+    def _should_ignore_predicate(self, predicate):
+        ignored_predicates = ['type', 'item', 'first', 'rest']
+        return self._field_name_from_uri(predicate) in ignored_predicates
 
     def _check_triple(self, (subj, pred, obj)):
         """compare triple to ontology, return error or None"""
-        if self._field_name_from_uri(pred) in ['type', 'item', 'first', 'rest']:
-            log.info("ignoring triple with predicate '%s'" % self._field_name_from_uri(pred))
+        if self._should_ignore_predicate(pred):
+            log.info("Ignoring triple with predicate '{}'"
+                     .format(self._field_name_from_uri(pred)))
             return
 
         classes = []
@@ -91,58 +100,60 @@ class SchemaValidator(object):
 
         # collect a list of checked attributes
         self.checked_attributes.append((subj, pred))
-
         log.warning("successfully validated triple, no errors")
-
         return
 
     def _validate_class(self, cl):
         """return error if class `cl` is not found in the ontology"""
         if cl not in self.schema_def.attributes_by_class.keys():
             search_string = self._build_search_string(cl)
-            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
-                         search_string=search_string, doc_lines=self.doc_lines)
+            err = self.err("{0} - invalid class", self._field_name_from_uri(cl),
+                           search_string=search_string)
             return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+
+    def _get_stripped_attributes(self, member, classes):
+        stripped = []
+        if member not in self.stripped_attribute_names:
+            for cl in classes:
+                stripped.extend(
+                    [self._field_name_from_uri(attr)
+                     for attr in self.schema_def.attributes_by_class[cl]])
+            self.stripped_attribute_names[member] = stripped
+        else:
+            stripped = self.stripped_attribute_names[member]
+        return stripped
 
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
         log.info("Validating member %s" % member)
 
-        # TODO - recalculating this list for every member is inefficient
-        # calculate it once at the beginning, or consider replacing
-        # attributes_by_class with it somehow
-        stripped_attribute_names = []
-        for cl in classes:
-            sublist = []
-            for attr in self.schema_def.attributes_by_class[cl]:
-                sublist.append(attr)
-            for field in sublist:
-                sublist[sublist.index(field)] = self._field_name_from_uri(field)
-            stripped_attribute_names.append(sublist)
-
-        if self._field_name_from_uri(member) in sum(stripped_attribute_names, []):
+        stripped = self._get_stripped_attributes(member, classes)
+        if self._field_name_from_uri(member) in stripped:
             if member in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
                 log.info("success")
-                return None
-            elif self._namespace_from_uri(member) in self.allowed_namespaces:
+                return
+            if self._namespace_from_uri(member) in self.allowed_namespaces:
                 log.info("warning - unofficially allowed namespace")
-                err = _error("Unoficially allowed namespace {0}",
-                             self._namespace_from_uri(member), doc_lines=self.doc_lines)
-                return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
+                err = self.err("Unoficially allowed namespace {0}",
+                               self._namespace_from_uri(member))
+                return ValidationWarning(ValidationResult.WARNING, err['err'],
+                                         err['line'], err['num'])
         else:
             log.info("failure")
-            err = _error("{0} - invalid member of {1}",
-                         self._field_name_from_uri(member), self._field_name_from_uri(instanceof),
-                         doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            err = self.err("{0} - invalid member of {1}",
+                           self._field_name_from_uri(member),
+                           self._field_name_from_uri(instanceof))
+            return ValidationWarning(ValidationResult.ERROR, err['err'],
+                                     err['line'], err['num'])
 
     def _validate_duplication(self, (subj, pred), cl):
         """returns error if we've already seen the member `pred` on `subj`"""
         log.info("Validating duplication of member %s" % pred)
         if (subj, pred) in self.checked_attributes:
             log.info("failure")
-            err = _error("{0} - duplicated member of {1}", self._field_name_from_uri(pred),
-                         self._field_name_from_uri(cl), doc_lines=self.doc_lines)
+            err = self.err("{0} - duplicated member of {1}",
+                           self._field_name_from_uri(pred),
+                           self._field_name_from_uri(cl))
             return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
         log.info("success")
 

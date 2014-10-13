@@ -23,19 +23,7 @@ class Schemato(object):
         self.graph = CompoundGraph(self.url)
 
     def validate(self):
-        def import_module(name):
-            m = __import__(name)
-            for n in name.split(".")[1:]:
-                m = getattr(m, n)
-            return m
-        # include the parent directory in the path, to allow relative imports of
-        # modules from settings
-        os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-        self.validators = [getattr(
-            import_module('.'.join(module_path.split('.')[:-1])),
-            module_path.split('.')[-1])(
-            self.graph, self.doc_lines, url=self.url)
-            for module_path in settings.VALIDATOR_MODULES]
+        self._load_validators()
 
         results = [v.validate() for v in self.validators]
         log.info("returned from validate() : %s", results)
@@ -50,6 +38,22 @@ class Schemato(object):
             log.basicConfig(level=log.ERROR)
             log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
+    def _load_validators(self):
+        def import_module(name):
+            m = __import__(name)
+            for n in name.split(".")[1:]:
+                m = getattr(m, n)
+            return m
+        # include the parent directory in the path, to allow relative imports of
+        # modules from settings
+        os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+        self.validators = set()
+        for module_path in settings.VALIDATOR_MODULES:
+            path_parts = module_path.split('.')
+            module = import_module(".".join(path_parts[:-1]))
+            validator_fn = getattr(module, path_parts[-1])
+            self.validators.add(validator_fn(self.graph, self.doc_lines, url=self.url))
+
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""
         inlines = text.split('\n')
@@ -59,7 +63,7 @@ class Schemato(object):
         return doc_lines
 
     def _get_document(self, url):
-        """helper, open a file or url and return the doctype and content separately"""
+        """helper, open a file or url and return the content and identigier"""
         try:
             if "http://" not in url:
                 scheme_url = "http://%s" % url

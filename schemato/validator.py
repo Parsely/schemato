@@ -19,38 +19,29 @@ class SchemaValidator(object):
         self.schema_def = None
         self.allowed_namespaces = []
         self.graph = graph
+        self.checked_attributes = []
 
         log.info("init validator: %s" % self.__class__.__name__)
         self.doc_lines = doc_lines
 
     def validate(self):
         """Iterate over all triples in the graph and validate each one appropriately"""
-        errorstring = "Are you calling validate from the base SchemaValidator class?"
-
-        log.info("-" * 100)
-        log.info("Validating against %s" % self.schema_def.__class__.__name__)
+        log.info("{}\nValidating against {}"
+                 .format("-" * 100, self.schema_def.__class__.__name__))
 
         if not self.schema_def:
-            raise ValueError("No schema definition supplied. %s" % errorstring)
+            raise ValueError("No schema definition supplied.")
 
-        log.info("in validator.validate: %s" % self.graph)
+        self.checked_attributes = []
 
         # TODO - this should maybe choose the actually used namespace, not just
         # the first one in the list
         result = ValidationResult(self.allowed_namespaces[0])
-        if not self.graph:
-            return result
-
-        self.checked_attributes = []
         for subject, predicate, object_ in self.graph:
-            log.info("")
-            log.info("subj: " + subject)
-            log.info("pred: " + predicate)
-            log.info("obj: " + object_)
-            warning = self._check_triple((subject, predicate, object_))
-            if warning:
-                result.add_error(warning)
-        log.info("checked attributes: %s" % self.checked_attributes)
+            log.info("\nsubj: {subj}\npred: {pred}\n obj: {obj}"
+                     .format(subj=subject, pred=predicate, obj=object_.encode('utf-8')))
+            result.add_error(self._check_triple((subject, predicate, object_)))
+        log.debug("checked attributes: %s" % self.checked_attributes)
         return result
 
     def _check_triple(self, (subj, pred, obj)):
@@ -107,8 +98,11 @@ class SchemaValidator(object):
 
     def _validate_class(self, cl):
         """return error if class `cl` is not found in the ontology"""
-        # abstract, implemented in subclasses
-        raise NotImplementedError
+        if cl not in self.schema_def.attributes_by_class.keys():
+            search_string = self._build_search_string(cl)
+            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
+                         search_string=search_string, doc_lines=self.doc_lines)
+            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 
     def _validate_member(self, member, classes, instanceof):
         """return error if `member` is not a member of any class in `classes`"""
@@ -210,19 +204,15 @@ class SchemaValidator(object):
                 return rt.URIRef("%s%s" % (ns[1], qname.split(':')[-1]))
         return qname
 
+    def _build_search_string(self, uri):
+        return self._field_name_from_uri(uri)
+
 
 class RdfValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
         self.graph = self.graph.rdfa_graph  # use the rdfa half of the compound graph
-
-    def _validate_class(self, cl):
-        if cl not in self.schema_def.attributes_by_class.keys():
-            search_string = self._field_name_from_uri(cl)
-            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
-                         search_string=search_string, doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
 
 
 class MicrodataValidator(SchemaValidator):
@@ -231,9 +221,5 @@ class MicrodataValidator(SchemaValidator):
         self.parser = pyMicrodata()
         self.graph = self.graph.microdata_graph  # use the microdata half of the compound
 
-    def _validate_class(self, cl):
-        if cl not in self.schema_def.attributes_by_class.keys():
-            search_string = str(cl)
-            err = _error("{0} - invalid class", self._field_name_from_uri(cl),
-                         search_string=search_string, doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+    def _build_search_string(self, uri):
+        return str(uri)

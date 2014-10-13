@@ -12,10 +12,11 @@ class ValidationResult(object):
         self.namespace = namespace
 
     def add_error(self, warning):
-        if warning.level == ValidationResult.WARNING:
-            self.warnings.append(warning)
-        elif warning.level == ValidationResult.ERROR:
-            self.errors.append(warning)
+        if warning:
+            if warning.level == ValidationResult.WARNING:
+                self.warnings.append(warning)
+            elif warning.level == ValidationResult.ERROR:
+                self.errors.append(warning)
 
     def to_json(self):
         mapping = self.to_dict()
@@ -48,7 +49,6 @@ class ValidationWarning(object):
         mapping['line'] = self.line_text
         mapping['num'] = self.line_num
         return mapping
-
 
     def to_json(self):
         mapping = self.to_dict()

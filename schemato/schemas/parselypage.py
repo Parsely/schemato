@@ -6,7 +6,6 @@ import json
 import urllib2
 import sys
 import os.path
-import re
 from HTMLParser import HTMLParser, HTMLParseError
 
 from errors import _error
@@ -18,6 +17,7 @@ sys.path.append(
 from validator import SchemaValidator
 
 PARSELY_PAGE_SCHEMA = "http://parsely.com/parsely_page_schema.html"
+
 
 class ParselyPageParser(HTMLParser):
     def __init__(self):
@@ -35,7 +35,7 @@ class ParselyPageParser(HTMLParser):
                 try:
                     self.ppage = json.loads(ppage)
                 except:
-                    raise HTMLParseError("bad ppage") # bad ppage
+                    raise HTMLParseError("bad ppage")  # bad ppage
 
     def original_unescape(self, s):
         """Since we need to use this sometimes"""
@@ -75,15 +75,15 @@ class ParselyPageValidator(SchemaValidator):
         ret = None
         try:
             parser.feed(body)
-        except HTMLParseError, ex:
-            pass # ignore and hope we got ppage
+        except HTMLParseError:
+            pass  # ignore and hope we got ppage
         if parser.ppage is None:
             return
 
         ret = parser.ppage
         if ret:
             ret = {parser.original_unescape(k): parser.original_unescape(v)
-                    for k,v in ret.iteritems()}
+                   for k, v in ret.iteritems()}
         return ret
 
     def validate(self):
@@ -100,11 +100,11 @@ class ParselyPageValidator(SchemaValidator):
     def check_key(self, key):
         if key not in self.stdref:
             err = _error("{0} - invalid parsely-page field", key,
-                doc_lines=self.doc_lines)
+                         doc_lines=self.doc_lines)
             return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
         if key in ["link", "image_url"]:
             if not self.url_validator(self.data[key]):
                 err = _error("{0} - invalid url for field '{1}'", self.data[key], key,
-                    doc_lines=self.doc_lines)
+                             doc_lines=self.doc_lines)
                 return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
         return None

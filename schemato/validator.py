@@ -43,7 +43,8 @@ class SchemaValidator(object):
 
         # TODO - this should maybe choose the actually used namespace, not just
         # the first one in the list
-        result = ValidationResult(self.allowed_namespaces[0])
+        result = ValidationResult(self.allowed_namespaces[0],
+                                  self.schema_def.__class__.__name__)
         for subject, predicate, object_ in self.graph:
             log.info("\nsubj: {subj}\npred: {pred}\n obj: {obj}"
                      .format(subj=subject, pred=predicate,

@@ -5,11 +5,12 @@ class ValidationResult(object):
     ERROR = 1
     WARNING = 2
 
-    def __init__(self, namespace):
+    def __init__(self, namespace, classname):
         super(ValidationResult, self).__init__()
         self.warnings = []
         self.errors = []
         self.namespace = namespace
+        self.classname = classname
 
     def add_error(self, warning):
         if warning:
@@ -31,7 +32,11 @@ class ValidationResult(object):
         for error in self.errors:
             mapping['errors'].append(error.to_dict())
         mapping['namespace'] = self.namespace
+        mapping['classname'] = self.classname
         return mapping
+
+    def __len__(self):
+        return len(self.warnings) + len(self.errors)
 
 
 class ValidationWarning(object):

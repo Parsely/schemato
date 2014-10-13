@@ -22,12 +22,12 @@ class Schemato(object):
 
         self.graph = CompoundGraph(self.url)
 
+    def validate(self):
         def import_module(name):
             m = __import__(name)
             for n in name.split(".")[1:]:
                 m = getattr(m, n)
             return m
-
         # include the parent directory in the path, to allow relative imports of
         # modules from settings
         os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -37,7 +37,6 @@ class Schemato(object):
             self.graph, self.doc_lines, url=self.url)
             for module_path in settings.VALIDATOR_MODULES]
 
-    def validate(self):
         results = [v.validate() for v in self.validators]
         log.info("returned from validate() : %s", results)
         for res in results:

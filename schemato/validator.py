@@ -30,7 +30,9 @@ class SchemaValidator(object):
         self.err = partial(_error, doc_lines=self.doc_lines)
 
     def validate(self):
-        """Iterate over all triples in the graph and validate each one appropriately"""
+        """Iterate over all triples in the graph and validate each one
+            appropriately
+        """
         log.info("{}\nValidating against {}"
                  .format("-" * 100, self.schema_def.__class__.__name__))
 
@@ -44,7 +46,8 @@ class SchemaValidator(object):
         result = ValidationResult(self.allowed_namespaces[0])
         for subject, predicate, object_ in self.graph:
             log.info("\nsubj: {subj}\npred: {pred}\n obj: {obj}"
-                     .format(subj=subject, pred=predicate, obj=object_.encode('utf-8')))
+                     .format(subj=subject, pred=predicate,
+                             obj=object_.encode('utf-8')))
             result.add_error(self._check_triple((subject, predicate, object_)))
         return result
 
@@ -72,7 +75,8 @@ class SchemaValidator(object):
         if type(instanceof) == rt.URIRef:
             instanceof = self._expand_qname(instanceof)
 
-        if hasattr(self.schema_def, "attributes_by_class") and not self.schema_def.attributes_by_class:
+        if hasattr(self.schema_def, "attributes_by_class") and \
+           not self.schema_def.attributes_by_class:
             log.info("Parsed ontology not found. Parsing...")
             self.schema_def.parse_ontology()
 
@@ -109,7 +113,8 @@ class SchemaValidator(object):
             search_string = self._build_search_string(cl)
             err = self.err("{0} - invalid class", self._field_name_from_uri(cl),
                            search_string=search_string)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            return ValidationWarning(ValidationResult.ERROR, err['err'],
+                                     err['line'], err['num'])
 
     def _get_stripped_attributes(self, member, classes):
         stripped = []
@@ -129,17 +134,16 @@ class SchemaValidator(object):
 
         stripped = self._get_stripped_attributes(member, classes)
         if self._field_name_from_uri(member) in stripped:
-            if member in sum([self.schema_def.attributes_by_class[cl] for cl in classes], []):
-                log.info("success")
+            all_class_members = sum([self.schema_def.attributes_by_class[cl]
+                                     for cl in classes], [])
+            if member in all_class_members:
                 return
             if self._namespace_from_uri(member) in self.allowed_namespaces:
-                log.info("warning - unofficially allowed namespace")
                 err = self.err("Unoficially allowed namespace {0}",
                                self._namespace_from_uri(member))
                 return ValidationWarning(ValidationResult.WARNING, err['err'],
                                          err['line'], err['num'])
         else:
-            log.info("failure")
             err = self.err("{0} - invalid member of {1}",
                            self._field_name_from_uri(member),
                            self._field_name_from_uri(instanceof))
@@ -150,12 +154,11 @@ class SchemaValidator(object):
         """returns error if we've already seen the member `pred` on `subj`"""
         log.info("Validating duplication of member %s" % pred)
         if (subj, pred) in self.checked_attributes:
-            log.info("failure")
             err = self.err("{0} - duplicated member of {1}",
                            self._field_name_from_uri(pred),
                            self._field_name_from_uri(cl))
-            return ValidationWarning(ValidationResult.WARNING, err['err'], err['line'], err['num'])
-        log.info("success")
+            return ValidationWarning(ValidationResult.WARNING, err['err'],
+                                     err['line'], err['num'])
 
     def _superclasses_for_subject(self, graph, typeof):
         """helper, returns a list of all superclasses of a given class"""
@@ -165,7 +168,7 @@ class SchemaValidator(object):
         superclass = typeof
         while True:
             found = False
-            for (p, o) in self.schema_def.ontology[superclass]:
+            for p, o in self.schema_def.ontology[superclass]:
                 if self.schema_def.lexicon['subclass'] == str(p):
                     found = True
                     classes.append(o)
@@ -209,7 +212,8 @@ class SchemaValidator(object):
         """expand a qualified name's namespace prefix to include the resolved
         namespace root url"""
         if type(qname) is not rt.URIRef:
-            raise TypeError("Cannot expand qname of type %s, must be URIRef" % type(qname))
+            raise TypeError("Cannot expand qname of type {}, must be URIRef"
+                            .format(type(qname)))
         for ns in self.graph.namespaces():
             if ns[0] == qname.split(':')[0]:
                 return rt.URIRef("%s%s" % (ns[1], qname.split(':')[-1]))

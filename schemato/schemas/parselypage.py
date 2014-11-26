@@ -16,7 +16,7 @@ sys.path.append(
 
 from validator import SchemaValidator
 
-PARSELY_PAGE_SCHEMA = "http://parsely.com/parsely_page_schema.html"
+PARSELY_PAGE_SCHEMA = "http://parsely.com/static/data/parsely_page_schema.html"
 
 
 class ParselyPageParser(HTMLParser):

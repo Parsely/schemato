@@ -5,22 +5,32 @@ import os
 import cgi
 
 from compound_graph import CompoundGraph
+from StringIO import StringIO
 
 import settings
 
 
 class Schemato(object):
-    def __init__(self, source, loglevel="ERROR"):
+    def __init__(self, source, url=None, loglevel="ERROR"):
         """init with a local filepath or a URI"""
         super(Schemato, self).__init__()
         self.set_loglevel(loglevel)
 
-        def _read_stream(url):
-            text, url = self._get_document(url)
-            return url, self._document_lines(text)
-        self.url, self.doc_lines = _read_stream(source)
+        graph_source = source
+        if url is not None:
+            graph_source = StringIO(source)
 
-        self.graph = CompoundGraph(self.url)
+        self.graph = CompoundGraph(graph_source)
+
+        def _read_stream(source):
+            text, url = self._get_document(source)
+            return url, self._document_lines(text)
+
+        parsed_url, self.doc_lines = _read_stream(source)
+        self.url = url
+        if url is None:
+            self.url = parsed_url
+
 
     def validate(self):
         self._load_validators()
@@ -52,28 +62,37 @@ class Schemato(object):
             path_parts = module_path.split('.')
             module = import_module(".".join(path_parts[:-1]))
             validator_fn = getattr(module, path_parts[-1])
-            self.validators.add(validator_fn(self.graph, self.doc_lines, url=self.url))
+            validator = validator_fn(self.graph, self.doc_lines, url=self.url)
+            self.validators.add(validator)
 
     def _document_lines(self, text):
         """helper, get a list of (linetext, linenum) from a string with newlines"""
         inlines = text.split('\n')
-        doc_lines = [(cgi.escape(re.sub(r'^ +| +$', '', line)), num)
+        doc_lines = [(re.sub(r'^ +| +$', '', line), num)
                      for line, num
                      in zip(inlines, xrange(1, len(inlines) + 1))]
         return doc_lines
 
-    def _get_document(self, url):
-        """helper, open a file or url and return the content and identigier"""
+    def _get_document(self, source):
+        """helper, open a file or url and return the content and identifier"""
+        scheme_url = source
+        if not source.startswith("http"):
+            scheme_url = "http://%s" % source
+
+        text = source
+
         try:
-            if "http://" not in url:
-                scheme_url = "http://%s" % url
-            else:
-                scheme_url = url
-            try:
-                text = urllib.urlopen(scheme_url).read()
-                url = scheme_url
-            except:
-                text = open(url, "r").read()
+            text = urllib.urlopen(scheme_url).read()
         except:
-            raise IOError('Failed to read stream from %s' % url)
-        return (text, url)
+            pass
+        else:
+            return (text, scheme_url)
+
+        try:
+            text = open(source, "r").read()
+        except:
+            pass
+        else:
+            return (text, source)
+
+        return (text, None)

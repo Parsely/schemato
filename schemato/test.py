@@ -51,8 +51,18 @@ class TestSchemato(unittest.TestCase):
 
         for res in results:
             if res.classname == 'SchemaOrgSchemaDef':
+                self.assertTrue(len(res.errors) > 0)
                 for err in res.errors:
                     self.assertTrue(err.string in [a['string'] for a in expected['errors']])
+
+    def test_html_parse(self):
+        text = open("test_documents/foxnews.html", "r").read()
+        scm = Schemato(text, url="http://foxnews.com", loglevel="ERROR")
+        results = scm.validate()
+        for res in results:
+            if res.classname == "ParselyPageValidator":
+                self.assertTrue("ttle - invalid parsely-page field" in [a.string for a in res.errors])
+                self.assertTrue(len(res.errors) == 1)
 
     """
     def test_distillers(self):
@@ -70,9 +80,9 @@ class TestSchemato(unittest.TestCase):
             d.distill()
             pprint({"distilled": d.distilled, "sources": d.sources})
 
-        demo("Parse.ly strategy on Mashable", ParselyDistiller, mashable)
+        #demo("Parse.ly strategy on Mashable", ParselyDistiller, mashable)
         demo("News strategy on Mashable", NewsDistiller, mashable)
-        demo("Parse.ly strategy on NY Daily News", ParselyDistiller, nydailynews)
+        #demo("Parse.ly strategy on NY Daily News", ParselyDistiller, nydailynews)
         demo("News strategy on NY Daily News", NewsDistiller, nydailynews)
     """
 

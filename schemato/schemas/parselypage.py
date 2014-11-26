@@ -52,7 +52,7 @@ class ParselyPageParser(HTMLParser):
 
 class ParselyPageValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
-        super(ParselyPageValidator, self).__init__(graph, doc_lines, url="")
+        super(ParselyPageValidator, self).__init__(graph, doc_lines, url=url)
         self.text = '\n'.join([a[0] for a in doc_lines])
         self.stdref = self.get_standard()
         self.url_validator = HttpUrl()
@@ -93,7 +93,7 @@ class ParselyPageValidator(SchemaValidator):
             for key in self.data.keys():
                 res = self.check_key(key)
                 if res:
-                    result.append(res)
+                    result.add_error(res)
 
         return result
 

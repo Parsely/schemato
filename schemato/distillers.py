@@ -134,10 +134,5 @@ class Distiller(object):
         i = 0
         method_name = self.PATH_PREFIX[prefix]
         method = getattr(self, method_name)
-        for segment in segments:
-            print " " * i, prefix, segment
-            i += 1
         ret = method(segments)
-        if ret is not None:
-            print " " * i + " -> " + ret
         return ret

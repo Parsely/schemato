@@ -1,6 +1,5 @@
 from distillery import ParselyDistiller, NewsDistiller
 from schemato import Schemato
-from pprint import pprint
 import unittest
 
 
@@ -64,27 +63,41 @@ class TestSchemato(unittest.TestCase):
                 self.assertTrue("ttle - invalid parsely-page field" in [a.string for a in res.errors])
                 self.assertTrue(len(res.errors) == 1)
 
-    """
-    def test_distillers(self):
-        print "Loading NY Daily News..."
-        nydailynews = Schemato("http://www.nydailynews.com/news/politics/obama-fights-back-2nd-debate-romney-article-1.1185271")
-        print "Done."
-        print "Loading Mashable..."
+    def test_parsely_distiller(self):
+        expected = {
+            'author': u'Seth Fiegerman',
+            'image_url': u'http://rack.0.mshcdn.com/media/ZgkyMDEyLzEyLzA0LzY4L2FwcGxlc21hbnVmLmFDeC5qcGcKcAl0aHVtYgkxMjAweDYyNyMKZQlqcGc/c3babd6d/39c/apple-s-manufacturing-partner-explains-iphone-5-supply-problems-eaf7f9f5b3.jpg',
+            'link': u'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
+            'page_type': u'post',
+            'post_id': 1432059,
+            'pub_date': u'2012-10-17T15:36:40Z',
+            'section': u'business',
+            'site': 'Mashable',
+            'title': u"Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"
+        }
         mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
-        print "Done."
 
-        def demo(desc, class_, site):
-            print desc
-            print "=" * len(desc)
-            d = class_(site)
-            d.distill()
-            pprint({"distilled": d.distilled, "sources": d.sources})
+        d = ParselyDistiller(mashable)
+        d.distill()
+        self.assertEqual(d.distilled, expected)
 
-        #demo("Parse.ly strategy on Mashable", ParselyDistiller, mashable)
-        demo("News strategy on Mashable", NewsDistiller, mashable)
-        #demo("Parse.ly strategy on NY Daily News", ParselyDistiller, nydailynews)
-        demo("News strategy on NY Daily News", NewsDistiller, nydailynews)
-    """
+    def test_news_distiller(self):
+        expected = {
+            'author': None,
+            'description': 'An executive at Foxconn, Apple\'s manufacturing partner, says the iPhone 5 is "the most difficult device" it has ever had to make.',
+            'id': None,
+            'image_url': 'http://rack.0.mshcdn.com/media/ZgkyMDEyLzEyLzA0LzY4L2FwcGxlc21hbnVmLmFDeC5qcGcKcAl0aHVtYgkxMjAweDYyNyMKZQlqcGc/c3babd6d/39c/apple-s-manufacturing-partner-explains-iphone-5-supply-problems-eaf7f9f5b3.jpg',
+            'link': 'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
+            'pub_date': None,
+            'section': None,
+            'site': 'Mashable',
+            'title': "Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"
+        }
+        mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
+
+        d = NewsDistiller(mashable)
+        d.distill()
+        self.assertEqual(d.distilled, expected)
 
 
 if __name__ == "__main__":

@@ -7,7 +7,7 @@ reqs = ['rdflib',
 
 setup(
     name="schemato",
-    version="1.1.2",
+    version="1.2.0",
     author='Emmett Butler',
     author_email='emmett@parsely.com',
     url='https://github.com/Parsely/schemato',

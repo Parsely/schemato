@@ -2,11 +2,11 @@ import urllib
 import logging as log
 import re
 import os
-import cgi
 
 from compound_graph import CompoundGraph
 from StringIO import StringIO
 
+from schemas.parselypage import ParselyPageValidator
 import settings
 
 
@@ -31,6 +31,7 @@ class Schemato(object):
         if url is None:
             self.url = parsed_url
 
+        self.parsely_page = ParselyPageValidator(self.graph, self.doc_lines).data
 
     def validate(self):
         self._load_validators()

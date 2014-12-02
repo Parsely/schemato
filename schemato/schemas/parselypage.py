@@ -8,12 +8,11 @@ import sys
 import os.path
 from HTMLParser import HTMLParser, HTMLParseError
 
-from errors import _error
-from validationresult import ValidationResult, ValidationWarning
-
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
+from errors import _error
+from validationresult import ValidationResult, ValidationWarning
 from validator import SchemaValidator
 
 PARSELY_PAGE_SCHEMA = "http://parsely.com/static/data/parsely_page_schema.html"

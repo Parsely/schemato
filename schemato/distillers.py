@@ -1,14 +1,13 @@
-from rdflib.term import URIRef, BNode
+from rdflib.term import URIRef
+
 
 class Distill(object):
     def __init__(self, *precedence, **kwargs):
         self.precedence = precedence
-        if "name" in kwargs:
-            self.name = name
-        # otherwise, self.name provided by DistillerMeta
 
     def __repr__(self):
         return "Distill(name={0}, precedence={1})".format(self.name, self.precedence)
+
 
 class DistillerMeta(type):
     def __new__(meta, classname, bases, class_dict):
@@ -20,6 +19,7 @@ class DistillerMeta(type):
                 distill_fields.append(value)
         class_dict["distill_fields"] = distill_fields
         return type.__new__(meta, classname, bases, class_dict)
+
 
 class Distiller(object):
     __metaclass__ = DistillerMeta
@@ -49,6 +49,7 @@ class Distiller(object):
         "s": "get_schema_org",
         "og": "get_open_graph"
     }
+
     def parse_path(self, path):
         prefix, field = path.split(":")
         segments = field.split(".")
@@ -73,7 +74,7 @@ class Distiller(object):
         )
         for match in matches:
             subj, pred, obj = match
-            return str(obj)
+            return ''.join((obj,)).encode('utf-8')
         return None
 
     def get_schema_org(self, segments):
@@ -91,18 +92,18 @@ class Distiller(object):
             if match is None:
                 return None
             subj, pred, obj = match
-            return str(obj)
+            return ''.join((obj,)).encode('utf-8')
         elif len(segments) == 2:
             root, nested = segments
             discriminator, field = nested.split("/")
             typematches = graph.triples(
-                (None,  URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://schema.org/{key}".format(key=discriminator)))
+                (None, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://schema.org/{key}".format(key=discriminator)))
             )
             if field == "url":
                 for match in typematches:
                     subj, pred, obj = match
                     if isinstance(subj, URIRef):
-                        return str(subj)
+                        return ''.join((subj,)).encode('utf-8')
                 return None
             else:
                 typematch = None
@@ -124,7 +125,7 @@ class Distiller(object):
                 subj, pred, obj = valmatch
                 if obj is None:
                     return None
-                return str(obj)
+                return ''.join((obj,)).encode('utf-8')
         else:
             raise NotImplemented("Only 1 or 2 path segments currently supported")
 
@@ -140,4 +141,3 @@ class Distiller(object):
         if ret is not None:
             print " " * i + " -> " + ret
         return ret
-

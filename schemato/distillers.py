@@ -1,4 +1,5 @@
 from rdflib.term import URIRef
+from six import with_metaclass, iteritems
 
 
 class Distill(object):
@@ -13,7 +14,7 @@ class Distill(object):
 class DistillerMeta(type):
     def __new__(meta, classname, bases, class_dict):
         distill_fields = []
-        for name, value in class_dict.iteritems():
+        for name, value in iteritems(class_dict):
             if isinstance(value, Distill):
                 if getattr(value, "name", None) is None:
                     value.name = name
@@ -22,8 +23,7 @@ class DistillerMeta(type):
         return type.__new__(meta, classname, bases, class_dict)
 
 
-class Distiller(object):
-    __metaclass__ = DistillerMeta
+class Distiller(with_metaclass(DistillerMeta, object)):
 
     def __init__(self, schemato):
         self.schemato = schemato

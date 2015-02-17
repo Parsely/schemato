@@ -5,6 +5,7 @@ install_requires = [
     'rdflib',
     'lepl',
     'lxml',
+    'six',
 ]
 schemato_validators = [
     'rnews=schemato.schemas.rnews:RNewsValidator',

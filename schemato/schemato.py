@@ -3,7 +3,8 @@ import logging
 import re
 
 from pkg_resources import iter_entry_points
-from StringIO import StringIO
+from six import StringIO
+from six.moves import xrange
 
 from .compound_graph import CompoundGraph
 from .schemas.parselypage import ParselyPageValidator
@@ -46,10 +47,10 @@ class Schemato(object):
         return results
 
     def set_loglevel(self, loglevel):
-        if hasattr(log, loglevel):
-            log.basicConfig(level=getattr(log, loglevel))
+        if hasattr(logging, loglevel):
+            log.setLevel(loglevel)
         else:
-            log.basicConfig(level=log.ERROR)
+            log.setLevel(logging.ERROR)
             log.error(
                 "Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 

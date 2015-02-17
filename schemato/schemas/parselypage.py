@@ -1,10 +1,10 @@
+import json
+
 from lxml import etree
 from lepl.apps.rfc3696 import HttpUrl
-
-from StringIO import StringIO
-import json
-import urllib2
-from HTMLParser import HTMLParser, HTMLParseError
+from six import StringIO, iteritems
+from six.moves.urllib.request import urlopen
+from six.moves.html_parser import HTMLParser, HTMLParseError
 
 from ..errors import _error
 from ..validationresult import ValidationResult, ValidationWarning
@@ -56,10 +56,12 @@ class ParselyPageValidator(SchemaValidator):
     def get_standard(self):
         """get list of allowed parameters"""
         try:
-            res = urllib2.urlopen(PARSELY_PAGE_SCHEMA)
+            res = urlopen(PARSELY_PAGE_SCHEMA)
         except:
             return []
         text = res.read()
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
         tree = etree.parse(StringIO(text))
         stdref = tree.xpath("//div/@about")
         return [a.split(':')[1] for a in stdref]
@@ -78,7 +80,7 @@ class ParselyPageValidator(SchemaValidator):
         ret = parser.ppage
         if ret:
             ret = {parser.original_unescape(k): parser.original_unescape(v)
-                   for k, v in ret.iteritems()}
+                   for k, v in iteritems(ret)}
         return ret
 
     def validate(self):

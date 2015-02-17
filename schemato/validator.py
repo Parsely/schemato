@@ -2,7 +2,6 @@ import logging
 from functools import partial
 
 import rdflib.term as rt
-
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 

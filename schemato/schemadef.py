@@ -1,12 +1,12 @@
-import rdflib.term as rt
 import logging
-from collections import defaultdict
-
-from rdflib.plugins.parsers.pyRdfa import pyRdfa
-import rdflib
 import os
 import time
-import urllib2
+from collections import defaultdict
+
+import rdflib.term as rt
+import rdflib
+from rdflib.plugins.parsers.pyRdfa import pyRdfa
+from six.moves.urllib.request import urlopen
 
 from .utils import deepest_node
 from .settings import CACHE_ROOT, CACHE_EXPIRY
@@ -56,7 +56,7 @@ class SchemaDef(object):
 
     def _pull_schema_definition(self, fname):
         """download an ontology definition from the web"""
-        std_url = urllib2.urlopen(self._ontology_file)
+        std_url = urlopen(self._ontology_file)
         cached_std = open(fname, "w+")
         cached_std.write(std_url.read())
         cached_std.close()

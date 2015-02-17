@@ -1,13 +1,12 @@
 import urllib
 import logging
 import re
-import os
 
-from compound_graph import CompoundGraph
+from pkg_resources import iter_entry_points
 from StringIO import StringIO
 
+from .compound_graph import CompoundGraph
 from .schemas.parselypage import ParselyPageValidator
-from .settings import VALIDATOR_MODULES
 
 
 log = logging.getLogger(__name__)
@@ -55,19 +54,8 @@ class Schemato(object):
                 "Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _load_validators(self):
-        def import_module(name):
-            m = __import__(name)
-            for n in name.split(".")[1:]:
-                m = getattr(m, n)
-            return m
-        # include the parent directory in the path, to allow relative imports
-        # of modules from settings
-        os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-        self.validators = set()
-        for module_path in VALIDATOR_MODULES:
-            path_parts = module_path.split('.')
-            module = import_module(".".join(path_parts[:-1]))
-            validator_fn = getattr(module, path_parts[-1])
+        for entry_point in iter_entry_points('schemato_validators'):
+            validator_fn = entry_point.load()
             validator = validator_fn(self.graph, self.doc_lines, url=self.url)
             self.validators.add(validator)
 

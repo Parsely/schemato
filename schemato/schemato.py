@@ -1,5 +1,5 @@
 import urllib
-import logging as log
+import logging
 import re
 import os
 
@@ -8,6 +8,9 @@ from StringIO import StringIO
 
 from .schemas.parselypage import ParselyPageValidator
 from .settings import VALIDATOR_MODULES
+
+
+log = logging.getLogger(__name__)
 
 
 class Schemato(object):

@@ -1,13 +1,16 @@
+import logging
 from functools import partial
 
 import rdflib.term as rt
-import logging as log
 
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 
 from .errors import _error
 from .validationresult import ValidationResult, ValidationWarning
+
+
+log = logging.getLogger(__name__)
 
 
 class SchemaValidator(object):

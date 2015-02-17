@@ -1,5 +1,5 @@
 import rdflib.term as rt
-import logging as log
+import logging
 from collections import defaultdict
 
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
@@ -8,9 +8,11 @@ import os
 import time
 import urllib2
 
-
 from .utils import deepest_node
 from .settings import CACHE_ROOT, CACHE_EXPIRY
+
+
+log = logging.getLogger(__name__)
 
 
 # what functionality is common to every single schema def?

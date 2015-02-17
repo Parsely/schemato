@@ -1,10 +1,14 @@
-from collections import defaultdict
-import logging as log
+import logging
 import rdflib.term as rt
+from collections import defaultdict
 
 from ..validator import RdfValidator
 from ..schemadef import RdfSchemaDef
 from ..utils import deepest_node
+
+
+log = logging.getLogger(__name__)
+
 
 class OpenGraphSchemaDef(RdfSchemaDef):
     def __init__(self, url):

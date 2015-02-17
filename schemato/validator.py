@@ -58,8 +58,10 @@ class SchemaValidator(object):
         ignored_predicates = ['type', 'item', 'first', 'rest']
         return self._field_name_from_uri(predicate) in ignored_predicates
 
-    def _check_triple(self, (subj, pred, obj)):
+    def _check_triple(self, args):
         """compare triple to ontology, return error or None"""
+        subj, pred, obj = args
+
         if self._should_ignore_predicate(pred):
             log.info("Ignoring triple with predicate '{}'"
                      .format(self._field_name_from_uri(pred)))
@@ -157,8 +159,10 @@ class SchemaValidator(object):
             return ValidationWarning(ValidationResult.ERROR, err['err'],
                                      err['line'], err['num'])
 
-    def _validate_duplication(self, (subj, pred), cl):
+    def _validate_duplication(self, subj_and_pred, cl):
         """returns error if we've already seen the member `pred` on `subj`"""
+        subj, pred = subj_and_pred
+
         log.info("Validating duplication of member %s" % pred)
         if (subj, pred) in self.checked_attributes:
             err = self.err("{0} - duplicated member of {1}",
@@ -184,8 +188,9 @@ class SchemaValidator(object):
                 break
         return classes
 
-    def _is_instance(self, (subj, pred, obj)):
+    def _is_instance(self, args):
         """helper, returns the class type of subj"""
+        subj, pred, obj = args
         input_pred_ns = self._namespace_from_uri(self._expand_qname(pred))
         triples = self.graph.triples(
             (subj, rt.URIRef(self.schema_def.lexicon['type']), None)

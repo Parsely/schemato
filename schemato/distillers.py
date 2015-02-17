@@ -76,7 +76,6 @@ class Distiller(object):
         for match in matches:
             subj, pred, obj = match
             return ''.join((obj,)).encode('utf-8')
-        return None
 
     def get_schema_org(self, segments):
         graph = self.schemato.graph.microdata_graph
@@ -87,13 +86,9 @@ class Distiller(object):
                  URIRef("http://schema.org/{key}".format(key=segment)),
                  None)
             )
-            match = None
-            try:
-                match = matches.next()
-            except StopIteration:
-                pass
+            match = next(matches, None)
             if match is None:
-                return None
+                return
             subj, pred, obj = match
             return ''.join((obj,)).encode('utf-8')
         elif len(segments) == 2:
@@ -109,29 +104,21 @@ class Distiller(object):
                     subj, pred, obj = match
                     if isinstance(subj, URIRef):
                         return ''.join((subj,)).encode('utf-8')
-                return None
+                return
             else:
-                typematch = None
-                try:
-                    typematch = typematches.next()
-                except StopIteration:
-                    typematch = (None, None, None)
+                typematch = next(typematches, (None, None, None))
                 subj, pred, obj = typematch
                 if subj is None:
-                    return None
+                    return
                 valmatches = graph.triples(
                     (subj,
                      URIRef("http://schema.org/{key}".format(key=field)),
                      None)
                 )
-                valmatch = None
-                try:
-                    valmatch = valmatches.next()
-                except StopIteration:
-                    valmatch = (None, None, None)
+                valmatch = next(valmatches, (None, None, None))
                 subj, pred, obj = valmatch
                 if obj is None:
-                    return None
+                    return
                 return ''.join((obj,)).encode('utf-8')
         else:
             raise NotImplementedError(

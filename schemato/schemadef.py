@@ -95,13 +95,14 @@ class SchemaDef(object):
                 lambda s: pyRdfa().graph_from_source(s)
         if not self._ontology_parser_function:
             raise ValueError(
-                "No function found to parse ontology. %s" % errorstring_base)
+                "No function found to parse ontology. %s" %
+                self.errorstring_base)
         if not self._ontology_file:
             raise ValueError(
-                "No ontology file specified. %s" % errorstring_base)
+                "No ontology file specified. %s" % self.errorstring_base)
         if not self.lexicon:
             raise ValueError(
-                "No lexicon object assigned. %s" % errorstring_base)
+                "No lexicon object assigned. %s" % self.errorstring_base)
 
         latest_file = self._read_schema()
 

@@ -134,7 +134,7 @@ class Distiller(object):
                     return None
                 return ''.join((obj,)).encode('utf-8')
         else:
-            raise NotImplemented(
+            raise NotImplementedError(
                 "Only 1 or 2 path segments currently supported")
 
     def get_value(self, path):

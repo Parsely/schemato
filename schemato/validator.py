@@ -6,8 +6,8 @@ import logging as log
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 
-from errors import _error
-from validationresult import ValidationResult, ValidationWarning
+from .errors import _error
+from .validationresult import ValidationResult, ValidationWarning
 
 
 class SchemaValidator(object):

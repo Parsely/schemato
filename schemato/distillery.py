@@ -1,4 +1,4 @@
-from distillers import Distill, Distiller
+from .distillers import Distill, Distiller
 
 
 class NewsDistiller(Distiller):

@@ -6,8 +6,8 @@ import os
 from compound_graph import CompoundGraph
 from StringIO import StringIO
 
-from schemas.parselypage import ParselyPageValidator
-import settings
+from .schemas.parselypage import ParselyPageValidator
+from .settings import VALIDATOR_MODULES
 
 
 class Schemato(object):
@@ -59,7 +59,7 @@ class Schemato(object):
         # modules from settings
         os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
         self.validators = set()
-        for module_path in settings.VALIDATOR_MODULES:
+        for module_path in VALIDATOR_MODULES:
             path_parts = module_path.split('.')
             module = import_module(".".join(path_parts[:-1]))
             validator_fn = getattr(module, path_parts[-1])

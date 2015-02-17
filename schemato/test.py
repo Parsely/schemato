@@ -1,6 +1,7 @@
-from distillery import ParselyDistiller, NewsDistiller
-from schemato import Schemato
 import unittest
+
+from .schemato import Schemato
+from .distillery import ParselyDistiller, NewsDistiller
 
 
 class TestSchemato(unittest.TestCase):

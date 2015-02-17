@@ -1,5 +1,5 @@
-from validator import RdfValidator
-from schemadef import RdfSchemaDef
+from ..validator import RdfValidator
+from ..schemadef import RdfSchemaDef
 
 
 class RNewsValidator(RdfValidator):

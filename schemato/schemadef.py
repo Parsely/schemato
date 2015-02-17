@@ -1,5 +1,6 @@
 import rdflib.term as rt
 import logging as log
+from collections import defaultdict
 
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 import rdflib
@@ -7,10 +8,9 @@ import os
 import time
 import urllib2
 
-from collections import defaultdict
 
-from utils import deepest_node
-import settings
+from .utils import deepest_node
+from .settings import CACHE_ROOT, CACHE_EXPIRY
 
 
 # what functionality is common to every single schema def?
@@ -36,10 +36,10 @@ class SchemaDef(object):
         """return the local filename of the definition file for this schema
         if not present or older than expiry, pull the latest version from
         the web at self._ontology_file"""
-        cache_filename = os.path.join(settings.CACHE_ROOT, "%s.smt" % self._representation)
+        cache_filename = os.path.join(CACHE_ROOT, "%s.smt" % self._representation)
         log.info("Attempting to read local schema at {}".format(cache_filename))
         try:
-            if time.time() - os.stat(cache_filename).st_mtime > settings.CACHE_EXPIRY:
+            if time.time() - os.stat(cache_filename).st_mtime > CACHE_EXPIRY:
                 log.warning("Cache expired, re-pulling")
                 self._pull_schema_definition(cache_filename)
         except OSError:

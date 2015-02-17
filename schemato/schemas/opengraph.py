@@ -2,9 +2,9 @@ from collections import defaultdict
 import logging as log
 import rdflib.term as rt
 
-from validator import RdfValidator
-from schemadef import RdfSchemaDef
-from utils import deepest_node
+from ..validator import RdfValidator
+from ..schemadef import RdfSchemaDef
+from ..utils import deepest_node
 
 class OpenGraphSchemaDef(RdfSchemaDef):
     def __init__(self, url):

@@ -1,9 +1,11 @@
 from setuptools import setup
 
-reqs = ['rdflib',
-        'lepl',
-        'lxml'
-        ]
+
+install_requires = [
+    'rdflib',
+    'lepl',
+    'lxml',
+]
 
 setup(
     name="schemato",
@@ -21,5 +23,5 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    install_requires=reqs
+    install_requires=install_requires
 )

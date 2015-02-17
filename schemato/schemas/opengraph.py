@@ -26,16 +26,21 @@ class OpenGraphSchemaDef(RdfSchemaDef):
             if type(obj) == rt.BNode:
                 leaves = deepest_node((subj, pred, obj), self.graph)
 
-            for s,p,o in leaves:
-                if s not in self.attributes_by_class[self.source] and not isinstance(s, rt.BNode):
+            for s, p, o in leaves:
+                if s not in self.attributes_by_class[self.source] \
+                        and not isinstance(s, rt.BNode):
                     self.attributes_by_class[self.source].append(s)
+
 
 class OpenGraphValidator(RdfValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(OpenGraphValidator, self).__init__(graph, doc_lines)
         self.source = url
         self.schema_def = OpenGraphSchemaDef(url)
-        self.allowed_namespaces = ["http://ogp.me/ns#", "http://opengraphprotocol.org/schema/"]
+        self.allowed_namespaces = [
+            "http://ogp.me/ns#",
+            "http://opengraphprotocol.org/schema/",
+        ]
 
     def _is_instance(self, (subj, pred, obj)):
         """helper, returns the class type of subj"""

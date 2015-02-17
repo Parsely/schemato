@@ -6,7 +6,8 @@ class Distill(object):
         self.precedence = precedence
 
     def __repr__(self):
-        return "Distill(name={0}, precedence={1})".format(self.name, self.precedence)
+        return "Distill(name={0}, precedence={1})".format(
+            self.name, self.precedence)
 
 
 class DistillerMeta(type):
@@ -82,7 +83,9 @@ class Distiller(object):
         if len(segments) == 1:
             segment = segments[0]
             matches = graph.triples(
-                (None, URIRef("http://schema.org/{key}".format(key=segment)), None)
+                (None,
+                 URIRef("http://schema.org/{key}".format(key=segment)),
+                 None)
             )
             match = None
             try:
@@ -97,7 +100,9 @@ class Distiller(object):
             root, nested = segments
             discriminator, field = nested.split("/")
             typematches = graph.triples(
-                (None, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://schema.org/{key}".format(key=discriminator)))
+                (None,
+                 URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                 URIRef("http://schema.org/{key}".format(key=discriminator)))
             )
             if field == "url":
                 for match in typematches:
@@ -115,7 +120,9 @@ class Distiller(object):
                 if subj is None:
                     return None
                 valmatches = graph.triples(
-                    (subj, URIRef("http://schema.org/{key}".format(key=field)), None)
+                    (subj,
+                     URIRef("http://schema.org/{key}".format(key=field)),
+                     None)
                 )
                 valmatch = None
                 try:
@@ -127,11 +134,11 @@ class Distiller(object):
                     return None
                 return ''.join((obj,)).encode('utf-8')
         else:
-            raise NotImplemented("Only 1 or 2 path segments currently supported")
+            raise NotImplemented(
+                "Only 1 or 2 path segments currently supported")
 
     def get_value(self, path):
         prefix, segments = self.parse_path(path)
-        i = 0
         method_name = self.PATH_PREFIX[prefix]
         method = getattr(self, method_name)
         ret = method(segments)

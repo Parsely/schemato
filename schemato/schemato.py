@@ -34,7 +34,8 @@ class Schemato(object):
         if url is None:
             self.url = parsed_url
 
-        self.parsely_page = ParselyPageValidator(self.graph, self.doc_lines).data
+        validator = ParselyPageValidator(self.graph, self.doc_lines)
+        self.parsely_page = validator.data
 
     def validate(self):
         self._load_validators()
@@ -50,7 +51,8 @@ class Schemato(object):
             log.basicConfig(level=getattr(log, loglevel))
         else:
             log.basicConfig(level=log.ERROR)
-            log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
+            log.error(
+                "Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _load_validators(self):
         def import_module(name):
@@ -58,8 +60,8 @@ class Schemato(object):
             for n in name.split(".")[1:]:
                 m = getattr(m, n)
             return m
-        # include the parent directory in the path, to allow relative imports of
-        # modules from settings
+        # include the parent directory in the path, to allow relative imports
+        # of modules from settings
         os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
         self.validators = set()
         for module_path in VALIDATOR_MODULES:
@@ -70,7 +72,9 @@ class Schemato(object):
             self.validators.add(validator)
 
     def _document_lines(self, text):
-        """helper, get a list of (linetext, linenum) from a string with newlines"""
+        """helper, get a list of (linetext, linenum) from a string with
+        newlines
+        """
         inlines = text.split('\n')
         doc_lines = [(re.sub(r'^ +| +$', '', line), num)
                      for line, num

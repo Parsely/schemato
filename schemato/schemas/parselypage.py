@@ -100,10 +100,14 @@ class ParselyPageValidator(SchemaValidator):
         if key not in self.stdref:
             err = _error("{0} - invalid parsely-page field", key,
                          doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            return ValidationWarning(
+                ValidationResult.ERROR, err['err'], err['line'], err['num'])
         if key in ["link", "image_url"]:
             if not self.url_validator(self.data[key]):
-                err = _error("{0} - invalid url for field '{1}'", self.data[key], key,
-                             doc_lines=self.doc_lines)
-                return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+                err = _error(
+                    "{0} - invalid url for field '{1}'", self.data[key], key,
+                    doc_lines=self.doc_lines)
+                return ValidationWarning(
+                    ValidationResult.ERROR, err['err'], err['line'],
+                    err['num'])
         return None

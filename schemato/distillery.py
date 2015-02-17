@@ -16,7 +16,8 @@ class NewsDistiller(Distiller):
 class ParselyDistiller(Distiller):
     site = Distill("og:site_name")
     title = Distill("pp:title", "s:headline", "og:title")
-    image_url = Distill("pp:image_url", "s:associatedMedia.ImageObject/url", "og:image")
+    image_url = Distill(
+        "pp:image_url", "s:associatedMedia.ImageObject/url", "og:image")
     pub_date = Distill("pp:pub_date", "s:datePublished")
     author = Distill("pp:author", "s:creator.Person/name", "s:author")
     section = Distill("pp:section", "s:articleSection")

@@ -89,7 +89,7 @@ class ParselyPageValidator(SchemaValidator):
         result = ValidationResult("parsely-page", self.__class__.__name__)
 
         if self.data:
-            for key in self.data.keys():
+            for key in self.data:
                 res = self.check_key(key)
                 if res:
                     result.add_error(res)

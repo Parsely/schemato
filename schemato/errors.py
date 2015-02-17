@@ -14,8 +14,9 @@ def error_line(string, doc_lines=None):
                     return line,num
     return ('', 0)
 
+
 def _error(message, *strings, **kwargs):
-    search_string = kwargs['search_string'] if 'search_string' in kwargs.keys() else strings[0]
+    search_string = kwargs['search_string'] if 'search_string' in kwargs else strings[0]
     doc_lines = kwargs['doc_lines']
     message = message.format(*strings)
     line,num = error_line(search_string, doc_lines=doc_lines)

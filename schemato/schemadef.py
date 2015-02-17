@@ -63,7 +63,7 @@ class SchemaDef(object):
         start = time.clock()
         log.info("Parsing ontology file for {}".format(self.__class__.__name__))
         for subj, pred, obj in self._schema_nodes():
-            if subj not in self.attributes_by_class.keys():
+            if subj not in self.attributes_by_class:
                 if obj == rt.URIRef(self.lexicon['class']) and pred == rt.URIRef(self.lexicon['type']):
                     self.attributes_by_class[subj] = []
 
@@ -72,7 +72,7 @@ class SchemaDef(object):
                 leaves = deepest_node((subj, pred, obj), self.graph)
 
             for s, p, o in leaves:
-                if o not in self.attributes_by_class.keys():
+                if o not in self.attributes_by_class:
                     self.attributes_by_class[o] = []
                 if pred == rt.URIRef(self.lexicon['domain']):
                     self.attributes_by_class[o].append(subj)

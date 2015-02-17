@@ -110,7 +110,7 @@ class SchemaValidator(object):
 
     def _validate_class(self, cl):
         """return error if class `cl` is not found in the ontology"""
-        if cl not in self.schema_def.attributes_by_class.keys():
+        if cl not in self.schema_def.attributes_by_class:
             search_string = self._build_search_string(cl)
             err = self.err("{0} - invalid class", self._field_name_from_uri(cl),
                            search_string=search_string)

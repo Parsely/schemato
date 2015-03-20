@@ -81,6 +81,8 @@ class SchemaDef(object):
                     self.attributes_by_class[o] = []
                 if pred == rt.URIRef(self.lexicon['domain']):
                     self.attributes_by_class[o].append(subj)
+        if not self.attributes_by_class:
+            log.info("No nodes found in ontology")
         log.info("Ontology parsing complete in {}".format(
             (time.clock() - start) * 1000))
 

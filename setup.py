@@ -17,7 +17,7 @@ schemato_validators = [
 
 setup(
     name="schemato",
-    version="1.2.0",
+    version="1.3.0",
     author='Emmett Butler',
     author_email='emmett@parsely.com',
     url='https://github.com/Parsely/schemato',

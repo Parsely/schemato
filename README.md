@@ -35,6 +35,15 @@ Then, install the library with
 
     python setup.py install
 
+Tests
+-----
+
+To run the tests for Schemato:
+
+    pip install pytest
+    cd schemato
+    py.test test.py
+
 Distiller
 ---------
 

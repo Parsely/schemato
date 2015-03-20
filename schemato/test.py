@@ -70,7 +70,7 @@ class TestSchemato(unittest.TestCase):
             'link': u'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
             'page_type': u'post',
             'post_id': 1432059,
-            'pub_date': u'2012-10-17T15:36:40Z',
+            'pub_date': u'2012-10-17T11:36:40-04:00',
             'section': u'business',
             'site': 'Mashable',
             'title': u"Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"

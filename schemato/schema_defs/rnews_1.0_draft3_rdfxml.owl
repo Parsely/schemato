@@ -1,0 +1,1241 @@
+
+<?xml version="1.0"?>
+
+
+<!DOCTYPE rdf:RDF [
+    <!ENTITY owl "http://www.w3.org/2002/07/owl#" >
+    <!ENTITY xsd "http://www.w3.org/2001/XMLSchema#" >
+    <!ENTITY rNews "http://iptc.org/std/rNews/2011-10-07#" >
+    <!ENTITY rdfs "http://www.w3.org/2000/01/rdf-schema#" >
+    <!ENTITY rdf "http://www.w3.org/1999/02/22-rdf-syntax-ns#" >
+]>
+
+
+<rdf:RDF xmlns="http://www.semanticweb.org/owl/owlapi/turtle#"
+     xml:base="http://www.semanticweb.org/owl/owlapi/turtle"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rNews="http://iptc.org/std/rNews/2011-10-07#">
+    <owl:Ontology rdf:about="http://iptc.org/std/rNews/2011-10-07#">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The IPTC rNews Ontology (draft 3, @agebhard, June 9, 2012)</rdfs:comment>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.w3.org/2001/XMLSchema#duration -->
+
+    <rdfs:Datatype rdf:about="&xsd;duration"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#about -->
+
+    <owl:ObjectProperty rdf:about="&rNews;about">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Indicates that the NewsItem is specifically about a concept.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;Concept"/>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#accountablePerson -->
+
+    <owl:ObjectProperty rdf:about="&rNews;accountablePerson">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Specifies the person who is legally accountable for the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&rNews;Person"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#address -->
+
+    <owl:ObjectProperty rdf:about="&rNews;address">
+        <owl:versionInfo xml:lang="en">1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A real-world postal address associated with this entity.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                    <rdf:Description rdf:about="&rNews;Place"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#associatedArticle -->
+
+    <owl:ObjectProperty rdf:about="&rNews;associatedArticle">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An Article associated with the Media Object.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;Article"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;AudioObject"/>
+                    <rdf:Description rdf:about="&rNews;ImageObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#associatedMedia -->
+
+    <owl:ObjectProperty rdf:about="&rNews;associatedMedia">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An  image or audio or video object associated with a NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <owl:inverseOf rdf:resource="&rNews;associatedArticle"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;AudioObject"/>
+                    <rdf:Description rdf:about="&rNews;ImageObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#comment -->
+
+    <owl:ObjectProperty rdf:about="&rNews;comment">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Comments on this NewsItem, typically from readers/users.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&rNews;UserComment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#contributor -->
+
+    <owl:ObjectProperty rdf:about="&rNews;contributor">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A secondary contributor to the NewsItem, not the primary creator.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#copyrightHolder -->
+
+    <owl:ObjectProperty rdf:about="&rNews;copyrightHolder">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The entity holding the legal copyright to the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#creator -->
+
+    <owl:ObjectProperty rdf:about="&rNews;creator">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The author, videographer, photographer etc. (creator) of the NewsItem or Comment.</rdfs:comment>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;NewsItem"/>
+                    <rdf:Description rdf:about="&rNews;UserComment"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#discusses -->
+
+    <owl:ObjectProperty rdf:about="&rNews;discusses">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Specifies the NewsItem associated with this Comment.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;NewsItem"/>
+        <rdfs:domain rdf:resource="&rNews;UserComment"/>
+        <owl:inverseOf rdf:resource="&rNews;comment"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#editor -->
+
+    <owl:ObjectProperty rdf:about="&rNews;editor">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Specifies the person or organization who edited the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#geoCoordinates -->
+
+    <owl:ObjectProperty rdf:about="&rNews;geoCoordinates">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The geo coordinates of the location.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:domain rdf:resource="&rNews;Place"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#mentions -->
+
+    <owl:ObjectProperty rdf:about="&rNews;mentions">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Indicates that the NewsItem contains a reference to, but is not necessarily about a concept.</rdfs:comment>
+        <rdfs:range rdf:resource="&rNews;Concept"/>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#provider -->
+
+    <owl:ObjectProperty rdf:about="&rNews;provider">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Specifies the person or organization that distributed the NewsItem.  </rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;Organization"/>
+                    <rdf:Description rdf:about="&rNews;Person"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#sourceOrganization -->
+
+    <owl:ObjectProperty rdf:about="&rNews;sourceOrganization">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The organization on whose behalf the creator was working.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&rNews;Organization"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#additionalName -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;additionalName">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The middle name portion of a full name for a person.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Person"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#addressCountry -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;addressCountry">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A country, part of the address. Implementors are encouraged (but not required) to use ISO 3166-1 alpha-2 country codes.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#addressLocality -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;addressLocality">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A city/town/village etc. part of the address.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#addressRegion -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;addressRegion">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A subdivision of a country, part of the address.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#alternativeHeadline -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;alternativeHeadline">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A secondary headline or title of a NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#articleBody -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;articleBody">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The main text of the article.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rdf;XMLLiteral"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#articleSection -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;articleSection">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The top-level classification of the content by the publishing organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#box -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;box">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A box is the area enclosed by the rectangle formed by two points. The first point is the lower corner, the second point is the upper corner. A box is expressed as two points separated by a space character.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#circle -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;circle">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A circle is the circular region of a specified radius centered at a specified latitude and longitude. A circle is expressed as a pair followed by a radius in meters.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#commentText -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;commentText">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The text of the comment.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;UserComment"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rdf;XMLLiteral"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#commentTime -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;commentTime">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The date and time at which the comment was left.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;UserComment"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#copyrightNotice -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;copyrightNotice">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Any necessary copyright notice for claiming the intellectual property for the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#copyrightYear -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;copyrightYear">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The year during which the claimed copyright was first asserted.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#dateCreated -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;dateCreated">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The date (and optionally time) on which the NewsItem was created.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#dateModified -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;dateModified">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The date (and optionally time) on which the NewsItem was most recently modified.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#datePublished -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;datePublished">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The date (and optionally time) on which the NewsItem was first made available online.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;dateTime"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#dateline -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;dateline">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The location where the NewsItem was produced.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#description -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;description">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A free-form textual description of the NewsItem. Publishers may find it helpful to view this as the &quot;caption&quot; for a Media object.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#discussionUrl -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;discussionUrl">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A link to the page containing the comments relating to this NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#duration -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;duration">
+        <rdfs:comment xml:lang="en">The duration of the audio or video object in ISO 8601 date format. (see also http://en.wikipedia.org/wiki/ISO_8601)</rdfs:comment>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;AudioObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;duration"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#elevation -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;elevation">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The elevation is the height above sea level in meters of a specified point. An Elevation attribute must be specified in conjunction with a Point attribute.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#email -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;email">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An email address.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#encodingFormat -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;encodingFormat">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The encoding of a media asset. The encoding must be drawn from the IPTC NewsCodes for Images, Audio codecs or Video codecs available at http://cv.iptc.org/newscodes/format/, http://cv.iptc.org/newscodes/audiocodec/, and http://cv.iptc.org/newscodes/videocodec/ respectively.</rdfs:comment>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;AudioObject"/>
+                    <rdf:Description rdf:about="&rNews;ImageObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#familyName -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;familyName">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Family name. In the U.S., this is the last name of an individual.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Person"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#faxNumber -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;faxNumber">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An international fax number.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#featureCode -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;featureCode">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A code indicating the type of the geographic entity specified by a location object. Implementors are encouraged (but not required) to populate this field with values drawn from the controlled vocabulary of feature codes provided by geonames.org.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Place"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#genre -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;genre">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A term describing the general editorial category of the article. Implementors are encouraged (but not required) to draw values for type of material from the IPTC Genre subject headings at http://cv.iptc.org/newscodes/genre/.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#givenName -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;givenName">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Given name. In the U.S., this is the first name of an individual. Also used if the individual has only one name.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Person"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#headline -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;headline">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The main (or only) headline or title for a NewsItem</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#height -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;height">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Height of the media object.</rdfs:comment>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;integer"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;ImageObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#honorificPrefix -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;honorificPrefix">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An honorific prefix preceding a person&#39;s name such as Dr/Mrs/Mr.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Person"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#honorificSuffix -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;honorificSuffix">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An honorific suffix following a person&#39;s name such as M.D./PhD/MSCSW.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Person"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#identifier -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;identifier">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An identifier for a NewsItem. This ID can be generated by the underlying publishing system. No two distinct NewsItems from the same site should be assigned the same id, but a single NewsItem may have multiple ids.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#inLanguage -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;inLanguage">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A language used by the news content specified according to IETF BCP 47 at http://tools.ietf.org/html/bcp47.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#interactionCount -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;interactionCount">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A count of a specific user interactions with this item - for example, 20 UserLikes, 5 UserComments, or 300 UserDownloads. Implementors are encouraged (but not required) to use the interaction type from the controlled vocabulary provided by schema.org at: http://schema.org/UserInteraction</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#line -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;line">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A line is a point-to-point path consisting of two or more points. A line is expressed as a series of two or more point objects separated by space.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#name -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;name">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The natural language name for a concept.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Concept"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#point -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;point">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A point is a physical location on Earth. A point is expressed as a latitude and longitude separated by a space character.  Points should be expressed in decimal as laid out in the WGS84 specification (see also http://en.wikipedia.org/wiki/World_Geodetic_System).</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#polygon -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;polygon">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A polygon is the area enclosed by a point-to-point path for which the starting and ending points are the same. A polygon is expressed as a series of four or more space-delimited points where the first and final points are identical.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;GeoCoordinates"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#postOfficeBoxNumber -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;postOfficeBoxNumber">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A post office box associated with this postal address [optional].</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#postalCode -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;postalCode">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A postal code, part of the address.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#printColumn -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;printColumn">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The number of the column in which the article appears in the print edition.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#printEdition -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;printEdition">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The edition of the print product in which the article appears. Implementors wishing to link to their own controlled vocabularies for this property may wish to specify this property as a URI.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#printPage -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;printPage">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">If this article appears in print, this property indicates the name of the page on which the article is found. Please note that this field is intended for the exact page name (e.g. &quot;A5&quot;, &quot;B18&quot;).</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#printSection -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;printSection">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">If this article appears in print, this property indicates the print section in which the article appeared. Implementors wishing to link to their own controlled vocabularies for this property may wish to specify this property as a URI.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#publishingPrinciples -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;publishingPrinciples">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Link to page describing the editorial principles of the organization primarily responsible for the creation or publication of the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#replyToUrl -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;replyToUrl">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The URL at which a reply may be posted to the specified comment.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;UserComment"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#streetAddress -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;streetAddress">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A line of address information, in the format expected by a recipient postal service. City, country area, country and postal code are expressed separately.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#telephone -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;telephone">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">An international phone number.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#thumbnailUrl -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;thumbnailUrl">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A thumbnail image relevant to the content.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#tickerSymbol -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;tickerSymbol">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The exchange traded instrument associated with an Organization object. The tickerSymbol is expressed as an exchange and an instrument name separated by a space character. The IPTC suggests (but does not require) that implementors of rNews select the value for the exchange component of the tickerSymbol attribute from the controlled vocabulary of Market Identifier Codes (MIC) specified in ISO 15022.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Organization"/>
+        <rdfs:range rdf:resource="&xsd;string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#transcript -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;transcript">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The transcript of this Video or Audio object</rdfs:comment>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;AudioObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#url -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;url">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A reference to a web resource as part of an address, often the homepage of an individual or organization.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;PostalAddress"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#usageTerms -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;usageTerms">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">A human- or machine-readable statement about the usage terms pertaining to the NewsItem. Implementors can use this property to link to IPTC RightsML (or other Rights Expression Language) resources.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;anyURI"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#version -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;version">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The version of the NewsItem.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;NewsItem"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#width -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;width">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">Width of the media object.</rdfs:comment>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&rNews;ImageObject"/>
+                    <rdf:Description rdf:about="&rNews;VideoObject"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <rdfs:Datatype>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&xsd;integer"/>
+                    <rdf:Description rdf:about="&xsd;string"/>
+                </owl:unionOf>
+            </rdfs:Datatype>
+        </rdfs:range>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#wordCount -->
+
+    <owl:DatatypeProperty rdf:about="&rNews;wordCount">
+        <owl:versionInfo>1.0</owl:versionInfo>
+        <rdfs:comment xml:lang="en">The number of words in the article.</rdfs:comment>
+        <rdfs:domain rdf:resource="&rNews;Article"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#Article -->
+
+    <owl:Class rdf:about="&rNews;Article">
+        <rdfs:subClassOf rdf:resource="&rNews;NewsItem"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#AudioObject -->
+
+    <owl:Class rdf:about="&rNews;AudioObject">
+        <rdfs:subClassOf rdf:resource="&rNews;NewsItem"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#Concept -->
+
+    <owl:Class rdf:about="&rNews;Concept">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#GeoCoordinates -->
+
+    <owl:Class rdf:about="&rNews;GeoCoordinates">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#ImageObject -->
+
+    <owl:Class rdf:about="&rNews;ImageObject">
+        <rdfs:subClassOf rdf:resource="&rNews;NewsItem"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#NewsItem -->
+
+    <owl:Class rdf:about="&rNews;NewsItem">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#Organization -->
+
+    <owl:Class rdf:about="&rNews;Organization">
+        <rdfs:subClassOf rdf:resource="&rNews;Concept"/>
+        <owl:disjointWith rdf:resource="&rNews;Person"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#Person -->
+
+    <owl:Class rdf:about="&rNews;Person">
+        <rdfs:subClassOf rdf:resource="&rNews;Concept"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#Place -->
+
+    <owl:Class rdf:about="&rNews;Place">
+        <rdfs:subClassOf rdf:resource="&rNews;Concept"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#PostalAddress -->
+
+    <owl:Class rdf:about="&rNews;PostalAddress">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#UserComment -->
+
+    <owl:Class rdf:about="&rNews;UserComment">
+        <rdfs:subClassOf rdf:resource="&owl;Thing"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://iptc.org/std/rNews/2011-10-07#VideoObject -->
+
+    <owl:Class rdf:about="&rNews;VideoObject">
+        <rdfs:subClassOf rdf:resource="&rNews;NewsItem"/>
+        <rdfs:isDefinedBy>http://iptc.org/std/rNews/2011-10-07#</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&rNews;AudioObject"/>
+            <rdf:Description rdf:about="&rNews;ImageObject"/>
+            <rdf:Description rdf:about="&rNews;VideoObject"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 3.2.3.1824) http://owlapi.sourceforge.net -->
+
+

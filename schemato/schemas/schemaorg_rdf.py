@@ -1,12 +1,14 @@
-from validator import RdfValidator
-from schemadef import RdfSchemaDef
+from ..validator import RdfValidator
+from ..schemadef import RdfSchemaDef
 
 
 class SchemaOrgRDFaSchemaDef(RdfSchemaDef):
     def __init__(self):
         super(SchemaOrgRDFaSchemaDef, self).__init__()
         self._ontology_file = "http://schema.org/docs/schema_org_rdfa.html"
-        self._representation = "schemaorg_schemadef"  # SAME AS MICRODATA VERSION
+
+        # SAME AS MICRODATA VERSION
+        self._representation = "schemaorg_schemadef"
 
 
 class SchemaOrgRDFaValidator(RdfValidator):

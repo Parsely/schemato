@@ -1,5 +1,5 @@
-from validator import MicrodataValidator
-from schemadef import MicrodataSchemaDef
+from ..validator import MicrodataValidator
+from ..schemadef import MicrodataSchemaDef
 
 
 class SchemaOrgSchemaDef(MicrodataSchemaDef):

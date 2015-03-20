@@ -1,19 +1,15 @@
+import json
+
 from lxml import etree
 from lepl.apps.rfc3696 import HttpUrl
+from six import StringIO, iteritems
+from six.moves.urllib.request import urlopen
+from six.moves.html_parser import HTMLParser, HTMLParseError
 
-from StringIO import StringIO
-import json
-import urllib2
-import sys
-import os.path
-from HTMLParser import HTMLParser, HTMLParseError
+from ..errors import _error
+from ..validationresult import ValidationResult, ValidationWarning
+from ..validator import SchemaValidator
 
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-
-from errors import _error
-from validationresult import ValidationResult, ValidationWarning
-from validator import SchemaValidator
 
 PARSELY_PAGE_SCHEMA = "http://parsely.com/static/data/parsely_page_schema.html"
 
@@ -60,10 +56,12 @@ class ParselyPageValidator(SchemaValidator):
     def get_standard(self):
         """get list of allowed parameters"""
         try:
-            res = urllib2.urlopen(PARSELY_PAGE_SCHEMA)
+            res = urlopen(PARSELY_PAGE_SCHEMA)
         except:
             return []
         text = res.read()
+        if isinstance(text, bytes):
+            text = text.decode('utf-8')
         tree = etree.parse(StringIO(text))
         stdref = tree.xpath("//div/@about")
         return [a.split(':')[1] for a in stdref]
@@ -82,14 +80,14 @@ class ParselyPageValidator(SchemaValidator):
         ret = parser.ppage
         if ret:
             ret = {parser.original_unescape(k): parser.original_unescape(v)
-                   for k, v in ret.iteritems()}
+                   for k, v in iteritems(ret)}
         return ret
 
     def validate(self):
         result = ValidationResult("parsely-page", self.__class__.__name__)
 
         if self.data:
-            for key in self.data.keys():
+            for key in self.data:
                 res = self.check_key(key)
                 if res:
                     result.add_error(res)
@@ -100,10 +98,14 @@ class ParselyPageValidator(SchemaValidator):
         if key not in self.stdref:
             err = _error("{0} - invalid parsely-page field", key,
                          doc_lines=self.doc_lines)
-            return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+            return ValidationWarning(
+                ValidationResult.ERROR, err['err'], err['line'], err['num'])
         if key in ["link", "image_url"]:
             if not self.url_validator(self.data[key]):
-                err = _error("{0} - invalid url for field '{1}'", self.data[key], key,
-                             doc_lines=self.doc_lines)
-                return ValidationWarning(ValidationResult.ERROR, err['err'], err['line'], err['num'])
+                err = _error(
+                    "{0} - invalid url for field '{1}'", self.data[key], key,
+                    doc_lines=self.doc_lines)
+                return ValidationWarning(
+                    ValidationResult.ERROR, err['err'], err['line'],
+                    err['num'])
         return None

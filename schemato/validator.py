@@ -1,13 +1,15 @@
+import logging
 from functools import partial
 
 import rdflib.term as rt
-import logging as log
-
 from rdflib.plugins.parsers.pyMicrodata import pyMicrodata
 from rdflib.plugins.parsers.pyRdfa import pyRdfa
 
-from errors import _error
-from validationresult import ValidationResult, ValidationWarning
+from .errors import _error
+from .validationresult import ValidationResult, ValidationWarning
+
+
+log = logging.getLogger(__name__)
 
 
 class SchemaValidator(object):
@@ -56,8 +58,10 @@ class SchemaValidator(object):
         ignored_predicates = ['type', 'item', 'first', 'rest']
         return self._field_name_from_uri(predicate) in ignored_predicates
 
-    def _check_triple(self, (subj, pred, obj)):
+    def _check_triple(self, args):
         """compare triple to ontology, return error or None"""
+        subj, pred, obj = args
+
         if self._should_ignore_predicate(pred):
             log.info("Ignoring triple with predicate '{}'"
                      .format(self._field_name_from_uri(pred)))
@@ -85,8 +89,9 @@ class SchemaValidator(object):
         if class_invalid:
             log.warning("Invalid class %s" % instanceof)
             return class_invalid
-        # TODO - the above sometimes fails when a single object has more than one
-        # rdfa type (eg <span property="schema:creator rnews:creator" typeof="schema:Person rnews:Person">
+        # TODO - the above sometimes fails when a single object has more than
+        # one rdfa type (eg <span property="schema:creator rnews:creator"
+        # typeof="schema:Person rnews:Person">
         # Graph chooses the type in an arbitrary order, so it's unreliable
         # eg: http://semanticweb.com/the-impact-of-rdfa_b35003
 
@@ -110,10 +115,11 @@ class SchemaValidator(object):
 
     def _validate_class(self, cl):
         """return error if class `cl` is not found in the ontology"""
-        if cl not in self.schema_def.attributes_by_class.keys():
+        if cl not in self.schema_def.attributes_by_class:
             search_string = self._build_search_string(cl)
-            err = self.err("{0} - invalid class", self._field_name_from_uri(cl),
-                           search_string=search_string)
+            err = self.err(
+                "{0} - invalid class", self._field_name_from_uri(cl),
+                search_string=search_string)
             return ValidationWarning(ValidationResult.ERROR, err['err'],
                                      err['line'], err['num'])
 
@@ -130,7 +136,9 @@ class SchemaValidator(object):
         return stripped
 
     def _validate_member(self, member, classes, instanceof):
-        """return error if `member` is not a member of any class in `classes`"""
+        """return error if `member` is not a member of any class in
+        `classes`
+        """
         log.info("Validating member %s" % member)
 
         stripped = self._get_stripped_attributes(member, classes)
@@ -151,8 +159,10 @@ class SchemaValidator(object):
             return ValidationWarning(ValidationResult.ERROR, err['err'],
                                      err['line'], err['num'])
 
-    def _validate_duplication(self, (subj, pred), cl):
+    def _validate_duplication(self, subj_and_pred, cl):
         """returns error if we've already seen the member `pred` on `subj`"""
+        subj, pred = subj_and_pred
+
         log.info("Validating duplication of member %s" % pred)
         if (subj, pred) in self.checked_attributes:
             err = self.err("{0} - duplicated member of {1}",
@@ -178,20 +188,23 @@ class SchemaValidator(object):
                 break
         return classes
 
-    def _is_instance(self, (subj, pred, obj)):
+    def _is_instance(self, args):
         """helper, returns the class type of subj"""
+        subj, pred, obj = args
         input_pred_ns = self._namespace_from_uri(self._expand_qname(pred))
         triples = self.graph.triples(
             (subj, rt.URIRef(self.schema_def.lexicon['type']), None)
         )
         if triples:
             for tr in triples:
-                triple_obj_ns = self._namespace_from_uri(self._expand_qname(tr[2]))
+                triple_obj_ns = self._namespace_from_uri(
+                    self._expand_qname(tr[2]))
                 if input_pred_ns == triple_obj_ns:  # match namespaces
                     return tr[2]  # return the object
 
     def _field_name_from_uri(self, uri):
-        """helper, returns the name of an attribute (without namespace prefix)"""
+        """helper, returns the name of an attribute (without namespace prefix)
+        """
         # TODO - should use graph API
         uri = str(uri)
         parts = uri.split('#')
@@ -228,14 +241,16 @@ class RdfValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(RdfValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyRdfa()
-        self.graph = self.graph.rdfa_graph  # use the rdfa half of the compound graph
+        # use the rdfa half of the compound graph
+        self.graph = self.graph.rdfa_graph
 
 
 class MicrodataValidator(SchemaValidator):
     def __init__(self, graph, doc_lines, url=""):
         super(MicrodataValidator, self).__init__(graph, doc_lines, url=url)
         self.parser = pyMicrodata()
-        self.graph = self.graph.microdata_graph  # use the microdata half of the compound
+        # use the microdata half of the compound
+        self.graph = self.graph.microdata_graph
 
     def _build_search_string(self, uri):
         return str(uri)

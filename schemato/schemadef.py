@@ -1,16 +1,18 @@
-import rdflib.term as rt
-import logging as log
-
-from rdflib.plugins.parsers.pyRdfa import pyRdfa
-import rdflib
+import logging
 import os
 import time
-import urllib2
-
 from collections import defaultdict
 
-from utils import deepest_node
-import settings
+import rdflib.term as rt
+import rdflib
+from rdflib.plugins.parsers.pyRdfa import pyRdfa
+from six.moves.urllib.request import urlopen
+
+from .utils import deepest_node
+from .settings import CACHE_ROOT, CACHE_EXPIRY
+
+
+log = logging.getLogger(__name__)
 
 
 # what functionality is common to every single schema def?
@@ -22,7 +24,8 @@ class SchemaDef(object):
         This class knows nothing about the input file being validated
     """
 
-    errorstring_base = "Are you calling parse_ontology from the base SchemaDef class?"
+    errorstring_base = \
+        "Are you calling parse_ontology from the base SchemaDef class?"
 
     def __init__(self):
         super(SchemaDef, self).__init__()
@@ -36,10 +39,11 @@ class SchemaDef(object):
         """return the local filename of the definition file for this schema
         if not present or older than expiry, pull the latest version from
         the web at self._ontology_file"""
-        cache_filename = os.path.join(settings.CACHE_ROOT, "%s.smt" % self._representation)
-        log.info("Attempting to read local schema at {}".format(cache_filename))
+        cache_filename = os.path.join(
+            CACHE_ROOT, "%s.smt" % self._representation)
+        log.info("Attempting to read local schema at %s" % cache_filename)
         try:
-            if time.time() - os.stat(cache_filename).st_mtime > settings.CACHE_EXPIRY:
+            if time.time() - os.stat(cache_filename).st_mtime > CACHE_EXPIRY:
                 log.warning("Cache expired, re-pulling")
                 self._pull_schema_definition(cache_filename)
         except OSError:
@@ -52,7 +56,7 @@ class SchemaDef(object):
 
     def _pull_schema_definition(self, fname):
         """download an ontology definition from the web"""
-        std_url = urllib2.urlopen(self._ontology_file)
+        std_url = urlopen(self._ontology_file)
         cached_std = open(fname, "w+")
         cached_std.write(std_url.read())
         cached_std.close()
@@ -61,10 +65,11 @@ class SchemaDef(object):
         """place the ontology graph into a set of custom data structures
         for use by the validator"""
         start = time.clock()
-        log.info("Parsing ontology file for {}".format(self.__class__.__name__))
+        log.info("Parsing ontology file for %s" % self.__class__.__name__)
         for subj, pred, obj in self._schema_nodes():
-            if subj not in self.attributes_by_class.keys():
-                if obj == rt.URIRef(self.lexicon['class']) and pred == rt.URIRef(self.lexicon['type']):
+            if subj not in self.attributes_by_class:
+                if obj == rt.URIRef(self.lexicon['class']) and \
+                        pred == rt.URIRef(self.lexicon['type']):
                     self.attributes_by_class[subj] = []
 
             leaves = [(subj, pred, obj)]
@@ -72,25 +77,32 @@ class SchemaDef(object):
                 leaves = deepest_node((subj, pred, obj), self.graph)
 
             for s, p, o in leaves:
-                if o not in self.attributes_by_class.keys():
+                if o not in self.attributes_by_class:
                     self.attributes_by_class[o] = []
                 if pred == rt.URIRef(self.lexicon['domain']):
                     self.attributes_by_class[o].append(subj)
-        log.info("Ontology parsing complete in {}".format((time.clock() - start) * 1000))
+        log.info("Ontology parsing complete in {}".format(
+            (time.clock() - start) * 1000))
 
     def _schema_nodes(self):
         """parse self._ontology_file into a graph"""
         name, ext = os.path.splitext(self._ontology_file)
         if ext in ['.ttl']:
-            self._ontology_parser_function = lambda s: rdflib.Graph().parse(s, format='n3')
+            self._ontology_parser_function = \
+                lambda s: rdflib.Graph().parse(s, format='n3')
         else:
-            self._ontology_parser_function = lambda s: pyRdfa().graph_from_source(s)
+            self._ontology_parser_function = \
+                lambda s: pyRdfa().graph_from_source(s)
         if not self._ontology_parser_function:
-            raise ValueError("No function found to parse ontology. %s" % errorstring_base)
+            raise ValueError(
+                "No function found to parse ontology. %s" %
+                self.errorstring_base)
         if not self._ontology_file:
-            raise ValueError("No ontology file specified. %s" % errorstring_base)
+            raise ValueError(
+                "No ontology file specified. %s" % self.errorstring_base)
         if not self.lexicon:
-            raise ValueError("No lexicon object assigned. %s" % errorstring_base)
+            raise ValueError(
+                "No lexicon object assigned. %s" % self.errorstring_base)
 
         latest_file = self._read_schema()
 

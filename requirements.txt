@@ -1,6 +1,0 @@
-rdflib
-
-lepl
-lxml
-
-pytest

@@ -1,13 +1,16 @@
 import urllib
-import logging as log
+import logging
 import re
-import os
 
-from compound_graph import CompoundGraph
-from StringIO import StringIO
+from pkg_resources import iter_entry_points
+from six import StringIO
+from six.moves import xrange
 
-from schemas.parselypage import ParselyPageValidator
-import settings
+from .compound_graph import CompoundGraph
+from .schemas.parselypage import ParselyPageValidator
+
+
+log = logging.getLogger(__name__)
 
 
 class Schemato(object):
@@ -31,7 +34,8 @@ class Schemato(object):
         if url is None:
             self.url = parsed_url
 
-        self.parsely_page = ParselyPageValidator(self.graph, self.doc_lines).data
+        validator = ParselyPageValidator(self.graph, self.doc_lines)
+        self.parsely_page = validator.data
 
     def validate(self):
         self._load_validators()
@@ -43,31 +47,23 @@ class Schemato(object):
         return results
 
     def set_loglevel(self, loglevel):
-        if hasattr(log, loglevel):
-            log.basicConfig(level=getattr(log, loglevel))
+        if hasattr(logging, loglevel):
+            log.setLevel(loglevel)
         else:
-            log.basicConfig(level=log.ERROR)
-            log.error("Unrecognized loglevel %s, defaulting to ERROR", loglevel)
+            log.setLevel(logging.ERROR)
+            log.error(
+                "Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _load_validators(self):
-        def import_module(name):
-            m = __import__(name)
-            for n in name.split(".")[1:]:
-                m = getattr(m, n)
-            return m
-        # include the parent directory in the path, to allow relative imports of
-        # modules from settings
-        os.sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-        self.validators = set()
-        for module_path in settings.VALIDATOR_MODULES:
-            path_parts = module_path.split('.')
-            module = import_module(".".join(path_parts[:-1]))
-            validator_fn = getattr(module, path_parts[-1])
+        for entry_point in iter_entry_points('schemato_validators'):
+            validator_fn = entry_point.load()
             validator = validator_fn(self.graph, self.doc_lines, url=self.url)
             self.validators.add(validator)
 
     def _document_lines(self, text):
-        """helper, get a list of (linetext, linenum) from a string with newlines"""
+        """helper, get a list of (linetext, linenum) from a string with
+        newlines
+        """
         inlines = text.split('\n')
         doc_lines = [(re.sub(r'^ +| +$', '', line), num)
                      for line, num

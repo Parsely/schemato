@@ -72,7 +72,7 @@ https://github.com/Parsely/schemato/blob/master/schemato/distillers.py
 Here is an example of usage:
 
     >>> from schemato import Schemato
-    >>> from distillery import ParselyDistiller, NewsDistiller
+    >>> from schemato.distillery import ParselyDistiller, NewsDistiller
     >>> mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
     >>> ParselyDistiller(mashable).distill()
     {'author': u'Seth Fiegerman',

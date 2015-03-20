@@ -1,4 +1,5 @@
 from rdflib.term import URIRef
+from six import with_metaclass, iteritems
 
 
 class Distill(object):
@@ -6,13 +7,14 @@ class Distill(object):
         self.precedence = precedence
 
     def __repr__(self):
-        return "Distill(name={0}, precedence={1})".format(self.name, self.precedence)
+        return "Distill(name={0}, precedence={1})".format(
+            self.name, self.precedence)
 
 
 class DistillerMeta(type):
     def __new__(meta, classname, bases, class_dict):
         distill_fields = []
-        for name, value in class_dict.iteritems():
+        for name, value in iteritems(class_dict):
             if isinstance(value, Distill):
                 if getattr(value, "name", None) is None:
                     value.name = name
@@ -21,8 +23,7 @@ class DistillerMeta(type):
         return type.__new__(meta, classname, bases, class_dict)
 
 
-class Distiller(object):
-    __metaclass__ = DistillerMeta
+class Distiller(with_metaclass(DistillerMeta, object)):
 
     def __init__(self, schemato):
         self.schemato = schemato
@@ -75,63 +76,56 @@ class Distiller(object):
         for match in matches:
             subj, pred, obj = match
             return ''.join((obj,)).encode('utf-8')
-        return None
 
     def get_schema_org(self, segments):
         graph = self.schemato.graph.microdata_graph
         if len(segments) == 1:
             segment = segments[0]
             matches = graph.triples(
-                (None, URIRef("http://schema.org/{key}".format(key=segment)), None)
+                (None,
+                 URIRef("http://schema.org/{key}".format(key=segment)),
+                 None)
             )
-            match = None
-            try:
-                match = matches.next()
-            except StopIteration:
-                pass
+            match = next(matches, None)
             if match is None:
-                return None
+                return
             subj, pred, obj = match
             return ''.join((obj,)).encode('utf-8')
         elif len(segments) == 2:
             root, nested = segments
             discriminator, field = nested.split("/")
             typematches = graph.triples(
-                (None, URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), URIRef("http://schema.org/{key}".format(key=discriminator)))
+                (None,
+                 URIRef("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+                 URIRef("http://schema.org/{key}".format(key=discriminator)))
             )
             if field == "url":
                 for match in typematches:
                     subj, pred, obj = match
                     if isinstance(subj, URIRef):
                         return ''.join((subj,)).encode('utf-8')
-                return None
+                return
             else:
-                typematch = None
-                try:
-                    typematch = typematches.next()
-                except StopIteration:
-                    typematch = (None, None, None)
+                typematch = next(typematches, (None, None, None))
                 subj, pred, obj = typematch
                 if subj is None:
-                    return None
+                    return
                 valmatches = graph.triples(
-                    (subj, URIRef("http://schema.org/{key}".format(key=field)), None)
+                    (subj,
+                     URIRef("http://schema.org/{key}".format(key=field)),
+                     None)
                 )
-                valmatch = None
-                try:
-                    valmatch = valmatches.next()
-                except StopIteration:
-                    valmatch = (None, None, None)
+                valmatch = next(valmatches, (None, None, None))
                 subj, pred, obj = valmatch
                 if obj is None:
-                    return None
+                    return
                 return ''.join((obj,)).encode('utf-8')
         else:
-            raise NotImplemented("Only 1 or 2 path segments currently supported")
+            raise NotImplementedError(
+                "Only 1 or 2 path segments currently supported")
 
     def get_value(self, path):
         prefix, segments = self.parse_path(path)
-        i = 0
         method_name = self.PATH_PREFIX[prefix]
         method = getattr(self, method_name)
         ret = method(segments)

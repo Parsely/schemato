@@ -1,9 +1,19 @@
 from setuptools import setup
 
-reqs = ['rdflib',
-        'lepl',
-        'lxml'
-        ]
+
+install_requires = [
+    'rdflib',
+    'lepl',
+    'lxml',
+    'six',
+]
+schemato_validators = [
+    'rnews=schemato.schemas.rnews:RNewsValidator',
+    'opengraph=schemato.schemas.opengraph:OpenGraphValidator',
+    'schemaorg=schemato.schemas.schemaorg:SchemaOrgValidator',
+    'schemaorg_rdf=schemato.schemas.schemaorg_rdf:SchemaOrgRDFaValidator',
+    'parselypage=schemato.schemas.parselypage:ParselyPageValidator',
+]
 
 setup(
     name="schemato",
@@ -21,5 +31,6 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
     ],
-    install_requires=reqs
+    install_requires=install_requires,
+    entry_points={'schemato_validators': schemato_validators}
 )

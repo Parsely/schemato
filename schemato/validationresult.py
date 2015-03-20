@@ -49,7 +49,8 @@ class ValidationWarning(object):
 
     def to_dict(self):
         mapping = {}
-        mapping['level'] = "Error" if self.level == ValidationResult.ERROR else "Warning"
+        mapping['level'] = \
+            "Error" if self.level == ValidationResult.ERROR else "Warning"
         mapping['string'] = self.string
         mapping['line'] = self.line_text
         mapping['num'] = self.line_num

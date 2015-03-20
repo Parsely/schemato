@@ -58,9 +58,9 @@ class SchemaValidator(object):
         ignored_predicates = ['type', 'item', 'first', 'rest']
         return self._field_name_from_uri(predicate) in ignored_predicates
 
-    def _check_triple(self, args):
+    def _check_triple(self, triple):
         """compare triple to ontology, return error or None"""
-        subj, pred, obj = args
+        subj, pred, obj = triple
 
         if self._should_ignore_predicate(pred):
             log.info("Ignoring triple with predicate '{}'"
@@ -188,9 +188,9 @@ class SchemaValidator(object):
                 break
         return classes
 
-    def _is_instance(self, args):
+    def _is_instance(self, triple):
         """helper, returns the class type of subj"""
-        subj, pred, obj = args
+        subj, pred, obj = triple
         input_pred_ns = self._namespace_from_uri(self._expand_qname(pred))
         triples = self.graph.triples(
             (subj, rt.URIRef(self.schema_def.lexicon['type']), None)

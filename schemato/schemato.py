@@ -55,6 +55,7 @@ class Schemato(object):
                 "Unrecognized loglevel %s, defaulting to ERROR", loglevel)
 
     def _load_validators(self):
+        self.validators = set()
         for entry_point in iter_entry_points('schemato_validators'):
             validator_fn = entry_point.load()
             validator = validator_fn(self.graph, self.doc_lines, url=self.url)

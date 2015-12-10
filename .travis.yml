@@ -1,0 +1,18 @@
+language: python
+sudo: false
+
+notifications:
+  email:
+    - emmett@parsely.com
+
+install:
+    - python setup.py develop
+    - pip install pytest
+
+script:
+    - cd schemato
+    - py.test test.py
+
+branches:
+  only:
+    - master

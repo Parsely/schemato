@@ -74,10 +74,13 @@ https://github.com/Parsely/schemato/blob/master/schemato/distillers.py
 
 Here is an example of usage:
 
-    >>> from schemato import Schemato
-    >>> from schemato.distillery import ParselyDistiller, NewsDistiller
-    >>> mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
-    >>> ParselyDistiller(mashable).distill()
+.. sourcecode:: python
+
+    from schemato import Schemato
+    from schemato.distillery import ParselyDistiller, NewsDistiller
+    mashable = Schemato("http://mashable.com/2012/10/17/iphone-5-supply-problems/")
+    ParselyDistiller(mashable).distill()
+
     {'author': u'Seth Fiegerman',
     'image_url': u'http://5.mshcdn.com/wp-content/uploads/2012/10/iphone-lineup.jpg',
     'link': u'http://mashable.com/2012/10/17/iphone-5-supply-problems/',
@@ -91,8 +94,11 @@ Here is an example of usage:
 In this case, Mashable implements the parsely-page metadata field, which is
 used to source all the defined properties for this distiller.
 
-    >>> d = NewsDistiller(mashable)
-    >>> d.distill()
+.. sourcecode:: python
+
+    d = NewsDistiller(mashable)
+    d.distill()
+
     {'author': None,
     'id': None,
     'image_url': 'http://5.mshcdn.com/wp-content/uploads/2012/10/iphone-lineup.jpg',
@@ -100,7 +106,9 @@ used to source all the defined properties for this distiller.
     'pub_date': None,
     'section': None,
     'title': "Apple's Manufacturing Partner Explains iPhone 5 Supply Problems"}
-    >>> d.sources
+
+    d.sources
+
     {'author': None,
     'id': None,
     'image_url': 'og:image',
@@ -111,7 +119,7 @@ used to source all the defined properties for this distiller.
 
 In this case, our strategy did not involve parsely-page, and instead used
 Schema.org and OpenGraph. Since Mashable does not implement Schema.org but does
-implement OpenGraph, it comes up with the fields it can. The ``sources`` property 
+implement OpenGraph, it comes up with the fields it can. The ``sources`` property
 shows which fields were populated and how they got their values.
 
 Support

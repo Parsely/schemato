@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/Parsely/schemato.svg?branch=master
+    :target: https://travis-ci.org/Parsely/schemato
+
 schemato
 ========
 

@@ -5,6 +5,8 @@ from .distillery import ParselyDistiller, NewsDistiller
 
 
 class TestSchemato(unittest.TestCase):
+    maxDiff = None
+
     def test_schema_no_errors(self):
         scm = Schemato("test_documents/schema.html")
         results = scm.validate()
@@ -73,23 +75,18 @@ class TestSchemato(unittest.TestCase):
 
     def test_parsely_distiller(self):
         expected = {
-            'author': u'Seth Fiegerman',
-            'image_url': u'http://rack.0.mshcdn.com/media/ZgkyMDEyLzEyLzA0LzY4'
-                         u'L2FwcGxlc21hbnVmLmFDeC5qcGcKcAl0aHVtYgkxMjAweDYyNyM'
-                         u'KZQlqcGc/c3babd6d/39c/apple-s-manufacturing-partner'
-                         u'-explains-iphone-5-supply-problems-eaf7f9f5b3.jpg',
-            'link': u'http://mashable.com/2012/10/17/iphone-5-supply-problems'
-                    u'/',
+            'title': u'SHA1 sunset will block millions from encrypted net, Facebook warns',
+            'section': u'Risk Assessment',
+            'author': u'Dan Goodin',
+            'site': 'Ars Technica',
+            'post_id': 791847,
+            'image_url': u'http://cdn.arstechnica.net/wp-content/uploads/2015/12/blocked-150x150.jpg',
             'page_type': u'post',
-            'post_id': 1432059,
-            'pub_date': u'2012-10-17T11:36:40-04:00',
-            'section': u'business',
-            'site': 'Mashable',
-            'title': u"Apple's Manufacturing Partner Explains iPhone 5 Supply "
-                     u"Problems"
+            'link': u'http://arstechnica.com/security/2015/12/sha1-sunset-will-block-millions-from-encrypted-net-facebook-warns/',
+            'pub_date': u'2015-12-10T18:46:28Z'
         }
         mashable = Schemato(
-            "http://mashable.com/2012/10/17/iphone-5-supply-problems/")
+            "http://arstechnica.com/security/2015/12/sha1-sunset-will-block-millions-from-encrypted-net-facebook-warns/")
 
         d = ParselyDistiller(mashable)
         d.distill()
